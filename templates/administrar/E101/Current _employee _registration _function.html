@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Registration</title>
+    <link rel="stylesheet" href="cerf.css">
+</head>
+<body>
+    <div class="registration-container">
+        <h2>従業員登録</h2>
+        <form id="registration-form">
+            <div class="input-group">
+                <label for="username">ユーザーID:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="lastname">姓:</label>
+                <input type="text" id="lastname" name="lastname" required>
+            </div>
+            <div class="input-group">
+                <label for="firstname">名:</label>
+                <input type="text" id="firstname" name="firstname" required>
+            </div>
+            <div class="input-group">
+                <label for="password1">パスワード:</label>
+                <input type="password" id="password1" name="password1" required>
+            </div>
+            <div class="input-group">
+                <label for="password2">パスワード (再入力):</label>
+                <input type="password" id="password2" name="password2" required>
+            </div>
+            <div class="input-group">
+                <label for="role">ロール:</label>
+                <select id="role" name="role" required>
+                    <option value="employee">従業員</option>
+                    <option value="manager">管理者</option>
+                </select>
+            </div>
+            <button type="submit">登録確認</button>
+        </form>
+        <p id="error-message" class="error-message"></p>
+    </div>
+</body>
+</html>
