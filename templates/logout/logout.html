@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログアウト</title>
+    <style>
+.logout-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.logout-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.logout-container p {
+    color: #555;
+}
+
+.logout-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.logout-container a:hover {
+    text-decoration: underline;
+}
+
+    </style>
+</head>
+<body>
+    <div class="logout-container">
+        <h2>ログアウトしました</h2>
+        <p>正常にログアウトしました。<a href="{% url 'login' %}">再度ログイン</a></p>
+    </div>
+</body>
+</html>

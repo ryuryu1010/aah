@@ -4,15 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホーム画面</title>
-    <link rel="stylesheet" href="../static/d_index.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        li {
+            margin-bottom: 20px;
+        }
+
+        a {
+            display: block;
+            padding: 20px;
+            background-color: #007bff; /* リンクの背景色 */
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #0056b3; /* ホバー時の背景色 */
+        }
+    </style>
 </head>
 <body>
-        <h1>医師用ホーム画面</h1>
-         <ul>
-             <li><a href="doctor/All%20_patient_searches.html" class="link">全患者検索</a></li>
-             <li><a href="../doctor/D101/Additional_drug_administration.html" class="link">薬物追加投与</a></li>
-             <li><a href="../doctor/D102/Delete_drug_administration.html" class="link">薬物投与削除</a></li>
-             <li> <a href="../doctor/D103/Treatment_confirmed.html" class="link">処置確定</a></li>
-         </ul>
+    <h1>医師用ホーム画面</h1>
+    <ul>
+        <li><a href="#">全患者検索</a></li>
+        <li><a href="#">薬物追加投与</a></li>
+        <li><a href="#">薬物投与削除</a></li>
+        <li><a href="#">処置確定</a></li>
+        <li><a href="#">ログアウト</a></li>
+    </ul>
 </body>
 </html>

@@ -4,15 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホーム画面</title>
-    <link rel="stylesheet" href="../static/r_index.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        li {
+            margin-bottom: 20px;
+        }
+
+        a {
+            display: block;
+            padding: 20px;
+            background-color: #007bff; /* リンクの背景色 */
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #0056b3; /* ホバー時の背景色 */
+        }
+    </style>
 </head>
 <body>
     <h1>受付用ホーム画面</h1>
     <ul>
-        <li><a href="../reception/P102/C_i_p_table.html" class="link">従業員登録機能</a></li>
-            <li><a href="../reception/E103/Change_employee_information.html" class="link">従業員パスワード変更</a></li>
-            <li><a href="../reception/P101/patient_registration.html" class="link">患者登録機能</a></li>
-            <li><a href="../reception/P104/Search_for_patients.html" class="link">患者検索</a></li>
+        <li><a href="#">従業員登録機能</a></li>
+        <li><a href="#">従業員パスワード変更</a></li>
+        <li><a href="#">患者登録機能</a></li>
+        <li><a href="#">患者検索</a></li>
+        <li><a href="#">ログアウト</a></li>
     </ul>
 </body>
 </html>
