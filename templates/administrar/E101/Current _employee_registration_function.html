@@ -1,103 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Registration</title>
     <style>
-.registration-container {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-}
-
-.registration-container h2 {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.input-group {
-    margin-bottom: 15px;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.input-group input, .input-group select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    box-sizing: border-box;
-}
-
-.error-message {
-    color: red;
-    text-align: center;
-}
-
-button[type="submit"] {
-    width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
-button[type="submit"]:hover {
-    background-color: #45a049;
-}
-
-a {
-    display: block;
-    text-align: center;
-    margin-top: 10px;
-}
-
+        .registration-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .registration-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+        }
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="registration-container">
         <h2>従業員登録</h2>
-        <form id="registration-form">
+        <form method="post">
+            {% csrf_token %}
             <div class="input-group">
-                <label for="username">ユーザーID:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="empid">従業員ID:</label>
+                <input type="text" id="empid" name="empid" required>
             </div>
             <div class="input-group">
-                <label for="lastname">姓:</label>
-                <input type="text" id="lastname" name="lastname" required>
+                <label for="empfname">姓:</label>
+                <input type="text" id="empfname" name="empfname" required>
             </div>
             <div class="input-group">
-                <label for="firstname">名:</label>
-                <input type="text" id="firstname" name="firstname" required>
+                <label for="empiname">名:</label>
+                <input type="text" id="empiname" name="empiname" required>
             </div>
             <div class="input-group">
-                <label for="password1">パスワード:</label>
-                <input type="password" id="password1" name="password1" required>
+                <label for="emppasswd1">パスワード:</label>
+                <input type="password" id="emppasswd1" name="emppasswd1" required>
             </div>
             <div class="input-group">
-                <label for="password2">パスワード (再入力):</label>
-                <input type="password" id="password2" name="password2" required>
+                <label for="emppasswd2">パスワード (再入力):</label>
+                <input type="password" id="emppasswd2" name="emppasswd2" required>
             </div>
             <div class="input-group">
-                <label for="role">ロール:</label>
-                <select id="role" name="role" required>
-                    <option value="employee">従業員</option>
-                    <option value="manager">管理者</option>
+                <label for="emprole">ロール:</label>
+                <select id="emprole" name="emprole" required>
+                    <option value="0">管理者</option>
+                    <option value="1">従業員</option>
                 </select>
             </div>
             <button type="submit">登録確認</button>
         </form>
-        <p id="error-message" class="error-message"></p>
+        <p id="error-message" class="error-message">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </p>
     </div>
 </body>
 </html>

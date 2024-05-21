@@ -52,12 +52,13 @@
     <div class="container">
         <h1>管理者用ホーム画面</h1>
         <ul>
-            <li><a href="#">従業員登録</a></li>
+            <li><a href="{% url 'employee_registration' %}">従業員登録</a></li>
+             <li><a href="{% url 'employee_list' %}">従業員リスト</a></li>
             <li><a href="#">従業員パスワード変更</a></li>
             <li><a href="#">住居検索</a></li>
             <li><a href="#">仕入先テーブル</a></li>
             <li><a href="#">仕入先追加フォーム</a></li>
-             <li><a href="#">ログアウト</a></li>
+             <li><a href="logout">ログアウト</a></li>
         </ul>
     </div>
 </body>
