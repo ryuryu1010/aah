@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Employee
+from .models import Shiiregyosha
 
 def login(request):
     if request.method == "GET":
@@ -63,3 +64,35 @@ def employee_registration(request):
 def employee_list(request):
     employees = Employee.objects.all()
     return render(request, '../templates/administrar/E101/employee_list.html', {'employees': employees})
+
+
+
+def Add_vendor(request):
+    if request.method == 'POST':
+        shiireid = request.POST['shiireid']
+        shiiremei = request.POST['shiiremei']
+        shiireaddress = request.POST['shiireaddress']
+        shiiretel = request.POST['shiiretel']
+        shihonkin = request.POST['shihonkin']
+        nouki = request.POST['nouki']
+
+        if Shiiregyosha.objects.filter(shiireid=shiireid).exists():
+            return render(request, '../templates/administrar/S101/error.html', {'error_message': 'Supplier ID already exists.'})
+
+        supplier = Shiiregyosha(
+            shiireid=shiireid,
+            shiiremei=shiiremei,
+            shiireaddress=shiireaddress,
+            shiiretel=shiiretel,
+            shihonkin=shihonkin,
+            nouki=nouki
+        )
+        supplier.save()
+        messages.success(request, 'Supplier registered successfully.')
+        return render(request, '../templates/administrar/S102/Supplier _TBL.html/', {'suppliers': Shiiregyosha.objects.all()})
+
+    return render(request, '../templates/administrar/S101/Ability_to_add_records.html')
+
+def supplier_TBL(request):
+    suppliers = Shiiregyosha.objects.all()
+    return render(request, '../templates/administrar/S102/Supplier _TBL.html', {'suppliers': suppliers})

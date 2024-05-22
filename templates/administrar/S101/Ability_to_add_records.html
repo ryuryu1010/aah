@@ -5,62 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>仕入先追加フォーム</title>
     <style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f7f7f7;
-}
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
 
-h1 {
-    text-align: center;
-}
+        h1 {
+            text-align: center;
+        }
 
-form {
-    width: 50%;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+        form {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-label {
-    font-weight: bold;
-}
+        label {
+            font-weight: bold;
+        }
 
-input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-}
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
 
-input[type="submit"] {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-input[type="submit"]:hover {
-    background-color: #0056b3;
-}
-
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <h1>仕入先追加フォーム</h1>
-        <label for="supplier_name">氏名:</label><br>
-        <input type="text" id="supplier_name" name="supplier_name"><br>
-        <label for="address">住所:</label><br>
-        <input type="text" id="address" name="address"><br>
-        <label for="phone">電話番号:</label><br>
-        <input type="text" id="phone" name="phone"><br><br>
+    <form method="post">
+        {% csrf_token %}
+        <label for="shiireid">仕入れ先 ID:</label><br>
+        <input type="text" id="shiireid" name="shiireid" required><br>
+        <label for="shiiremei">仕入れ先名:</label><br>
+        <input type="text" id="shiiremei" name="shiiremei" required><br>
+        <label for="shiireaddress">仕入れ先住所:</label><br>
+        <input type="text" id="shiireaddress" name="shiireaddress" required><br>
+        <label for="shiiretel">仕入れ先電話番号:</label><br>
+        <input type="text" id="shiiretel" name="shiiretel" required><br>
+        <label for="shihonkin">資本金:</label><br>
+        <input type="number" id="shihonkin" name="shihonkin" required><br>
+        <label for="nouki">納期:</label><br>
+        <input type="number" id="nouki" name="nouki" required><br><br>
         <input type="submit" value="追加する">
     </form>
 </body>

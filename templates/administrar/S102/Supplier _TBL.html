@@ -6,56 +6,55 @@
     <title>仕入先一覧</title>
     <style>
         body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f7f7f7;
-}
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
 
-h1 {
-    text-align: center;
-    margin-top: 20px;
-}
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-table {
-    width: 80%;
-    margin: 20px auto;
-    border-collapse: collapse;
-    background-color: #fff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
 
-th, td {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
 
-th {
-    background-color: #f2f2f2;
-}
+        th {
+            background-color: #f2f2f2;
+        }
 
-tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
 
-a.button {
-    display: block;
-    width: 200px;
-    margin: 20px auto;
-    padding: 10px;
-    text-align: center;
-    text-decoration: none;
-    color: #fff;
-    background-color: #007bff;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+        a.button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-a.button:hover {
-    background-color: #0056b3;
-}
-
+        a.button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -64,17 +63,26 @@ a.button:hover {
         <thead>
             <tr>
                 <th>ID</th>
-                <th>氏名</th>
+                <th>仕入れ先名</th>
                 <th>住所</th>
                 <th>電話番号</th>
+                <th>資本金</th>
+                <th>納期</th>
             </tr>
         </thead>
         <tbody>
-            <!-- ここにデータを表示する部分 -->
-
-            <!-- データは必要に応じて追加 -->
+            {% for supplier in suppliers %}
+            <tr>
+                <td>{{ supplier.shiireid }}</td>
+                <td>{{ supplier.shiiremei }}</td>
+                <td>{{ supplier.shiireaddress }}</td>
+                <td>{{ supplier.shiiretel }}</td>
+                <td>{{ supplier.shihonkin }}</td>
+                <td>{{ supplier.nouki }}</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
-    <a href="#">新しい仕入先を追加する</a>
+    <a href="{% url 'Add_vendor' %}" class="button">新しい仕入先を追加する</a>
 </body>
 </html>
