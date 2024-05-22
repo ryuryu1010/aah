@@ -89,7 +89,7 @@ def Add_vendor(request):
         )
         supplier.save()
         messages.success(request, 'Supplier registered successfully.')
-        return render(request, '../templates/administrar/S102/Supplier _TBL.html/', {'suppliers': Shiiregyosha.objects.all()})
+        return redirect('supplier_TBL')
 
     return render(request, '../templates/administrar/S101/Ability_to_add_records.html')
 
