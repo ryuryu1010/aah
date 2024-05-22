@@ -114,3 +114,39 @@ def address_search(request):
         else:
             messages.error(request, '住所を入力してください。')
             return render(request, '../templates/administrar/S103/Housing_search.html')
+
+
+
+def change_password(request):
+        if request.method == 'POST':
+            empid = request.POST['employee_id']
+            current_password = request.POST['current_password']
+            new_password = request.POST['new_password']
+            confirm_new_password = request.POST['confirm_new_password']
+
+            try:
+                employee = Employee.objects.get(empid=empid, emppasswd=current_password)
+            except Employee.DoesNotExist:
+                messages.error(request, '従業員IDまたは現在のパスワードが正しくありません。')
+                return render(request, '../templates/administrar/E103/password_change_error.html')
+
+            if employee.emprole == 0:
+                messages.error(request, '管理者のパスワードは変更できません。')
+                return render(request, '../templates/administrar/E103/password_change_error.html')
+
+            if new_password != confirm_new_password:
+                messages.error(request, '新しいパスワードが一致しません。')
+                return render(request, '../templates/administrar/E103/password_change_error.html')
+
+            employee.emppasswd = new_password
+            employee.save()
+            messages.success(request, 'パスワードが正常に変更されました。')
+            return redirect('password_change_success')  # 適切なリダイレクト先に変更してください
+
+        return render(request, '../templates/administrar/E103/Employee_password_change.html')
+
+
+
+def password_change_success(request):
+    return render(request, '../templates/administrar/E103/password_change_success.html')
+
