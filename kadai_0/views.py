@@ -96,3 +96,21 @@ def Add_vendor(request):
 def supplier_TBL(request):
     suppliers = Shiiregyosha.objects.all()
     return render(request, '../templates/administrar/S102/Supplier _TBL.html', {'suppliers': suppliers})
+
+
+def address_search(request):
+    if request.method == 'GET':
+        return render(request, '../templates/administrar/S103/Housing_search.html')
+
+    if request.method == 'POST':
+        address_search = request.POST.get('address_search', '')
+        if address_search:
+            results = Shiiregyosha.objects.filter(shiireaddress__icontains=address_search)
+            if results.exists():
+                return render(request, '../templates/administrar/S103/Housing_search.html', {'results': results})
+            else:
+                messages.error(request, '一致する仕入れ先が見つかりませんでした。')
+                return render(request, '../templates/administrar/S103/Housing_search.html')
+        else:
+            messages.error(request, '住所を入力してください。')
+            return render(request, '../templates/administrar/S103/Housing_search.html')
