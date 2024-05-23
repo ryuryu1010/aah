@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Employee
-from .models import Shiiregyosha
+from .models import Employee, Shiiregyosha , Patient
 
 def login(request):
     if request.method == "GET":
@@ -25,6 +24,16 @@ def login(request):
 
         except Employee.DoesNotExist:
             return render(request, '../templates/login/login_error.html')
+
+def a_index(request):
+    return render(request, '../templates//index/a_index.html')
+
+def r_index(request):
+    return render(request, '../templates//index/r_index.html')
+
+def d_index(request):
+    return render(request, '../templates//index/d_index.html')
+
 
 def logout(request):
     from django.contrib.auth import logout as auth_logout
@@ -180,4 +189,39 @@ def change_password_1(request):
             return render(request, '../templates/reception/E103/password_change_error.html', {'error_message': '従業員IDまたは現在のパスワードが正しくありません。'})
 
     return render(request, '../templates/reception/E103/Change_employee_information.html')
+
+
+
+def patient_registration(request):
+    if request.method == 'POST':
+        patient_id = request.POST['patid']
+        last_name = request.POST['patfname']
+        first_name = request.POST['patiname']
+        insurance_number = request.POST['hokenmei']
+        expiration_date = request.POST['hokenexp']
+
+        if not all([patient_id, last_name, first_name, insurance_number, expiration_date]):
+            messages.error(request, '全ての項目を入力してください。')
+            return render(request, '../templates/reception/P101/patient_registration_error.html', {'error_message': '全ての項目を入力してください。'})
+
+        if Patient.objects.filter(patid=patient_id).exists():
+            messages.error(request, '患者IDが既に存在します。')
+            return render(request, '../templates/reception/P101/patient_registration_error.html', {'error_message': '患者IDが既に存在します。'})
+
+        patient = Patient(
+            patid=patient_id,
+            patfname=first_name,
+            patiname=last_name,
+            hokenmei=insurance_number,
+            hokenexp=expiration_date
+        )
+        patient.save()
+
+        messages.success(request, '患者が正常に登録されました。')
+        return redirect('patient_registration_success')
+
+    return render(request, '../templates/reception/P101/Patient_registration.html')
+
+def patient_registration_success(request):
+    return render(request, '../templates/reception/P101/patient_registration_succes.html')
 

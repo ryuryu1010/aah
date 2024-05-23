@@ -4,21 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>患者登録</title>
-    <link rel="stylesheet" type="text/css" href="pr.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        form {
+            width: 50%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .messages {
+            width: 50%;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f7f7f7;
+            border-radius: 5px;
+        }
+
+        .messages.error {
+            color: #d9534f;
+            border-color: #d9534f;
+            background-color: #f2dede;
+        }
+
+        .messages.success {
+            color: #3c763d;
+            border-color: #d6e9c6;
+            background-color: #dff0d8;
+        }
+    </style>
 </head>
 <body>
     <h1>患者登録</h1>
-    <form action="#" method="post">
-        <label for="patient_id">患者ID:</label><br>
-        <input type="text" id="patient_id" name="patient_id" placeholder="患者IDを入力"><br><br>
-        <label for="last_name">患者姓:</label><br>
-        <input type="text" id="last_name" name="last_name" placeholder="患者姓を入力"><br><br>
-        <label for="first_name">患者名:</label><br>
-        <input type="text" id="first_name" name="first_name" placeholder="患者名を入力"><br><br>
-        <label for="insurance_number">保険証記号番号:</label><br>
-        <input type="text" id="insurance_number" name="insurance_number" placeholder="保険証記号番号を入力"><br><br>
-        <label for="expiration_date">有効期限:</label><br>
-        <input type="date" id="expiration_date" name="expiration_date"><br><br>
+    <div class="messages">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="messages {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <form method="post" action="{% url 'patient_registration' %}">
+        {% csrf_token %}
+        <label for="patid">患者ID:</label><br>
+        <input type="text" id="patid" name="patid" placeholder="患者IDを入力"><br><br>
+        <label for="patfname">患者姓:</label><br>
+        <input type="text" id="patfname" name="patfname" placeholder="患者姓を入力"><br><br>
+        <label for="patiname">患者名:</label><br>
+        <input type="text" id="patiname" name="patiname" placeholder="患者名を入力"><br><br>
+        <label for="hokenmei">保険証記号番号:</label><br>
+        <input type="text" id="hokenmei" name="hokenmei" placeholder="保険証記号番号を入力"><br><br>
+        <label for="hokenexp">有効期限:</label><br>
+        <input type="date" id="hokenexp" name="hokenexp"><br><br>
         <input type="submit" value="登録確認">
     </form>
 </body>
