@@ -117,7 +117,7 @@ def address_search(request):
 
 
 
-def change_password(request):
+def change_password_0(request):
         if request.method == 'POST':
             empid = request.POST['employee_id']
             current_password = request.POST['current_password']
@@ -148,5 +148,36 @@ def change_password(request):
 
 
 def password_change_success(request):
-    return render(request, '../templates/administrar/E103/password_change_success.html')
+    return render(request, '../templates/reception/E103/password_change_success.html')
+
+
+def change_password_1(request):
+    if request.method == 'POST':
+        employee_id = request.POST['employee_id']
+        current_password = request.POST['current_password']
+        new_password = request.POST['new_password']
+        confirm_new_password = request.POST['confirm_new_password']
+
+        if not employee_id:
+            return render(request, '../templates/reception/E103/password_change_error.html', {'error_message': '従業員IDを入力してください。'})
+
+        try:
+            employee = Employee.objects.get(empid=employee_id, emppasswd=current_password)
+
+            if employee.emprole == 0:
+                return render(request, '../templates/reception/E103/password_change_error.html', {'error_message': '管理者のパスワードは変更できません。'})
+
+            if new_password != confirm_new_password:
+                return render(request, '../templates/reception/E103/password_change_error.html', {'error_message': '新しいパスワードが一致しません。'})
+
+            employee.emppasswd = new_password
+            employee.save()
+
+            messages.success(request, 'パスワードが正常に変更されました。')
+            return redirect('password_change_success')
+
+        except Employee.DoesNotExist:
+            return render(request, '../templates/reception/E103/password_change_error.html', {'error_message': '従業員IDまたは現在のパスワードが正しくありません。'})
+
+    return render(request, '../templates/reception/E103/Change_employee_information.html')
 

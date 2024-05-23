@@ -3,54 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ホーム画面</title>
+    <title>受付用ホーム画面</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 0;
-            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-
-        h1 {
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-
+        h1 {
+            color: #333333;
+        }
         ul {
             list-style-type: none;
             padding: 0;
-            margin: 50px auto;
-            text-align: center;
         }
-
-        li {
-            margin-bottom: 20px;
+        ul li {
+            margin: 10px 0;
         }
-
         a {
-            display: block;
-            padding: 20px;
-            background-color: #007bff; /* リンクの背景色 */
-            color: #fff;
             text-decoration: none;
-            border-radius: 10px;
-            font-size: 18px;
-            transition: background-color 0.3s ease;
+            color: #007bff;
+            font-weight: bold;
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
         }
-
         a:hover {
-            background-color: #0056b3; /* ホバー時の背景色 */
+            background-color: #007bff;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
+    <div class="container">
     <h1>受付用ホーム画面</h1>
     <ul>
-        <li><a href="#">従業員登録機能</a></li>
-        <li><a href="#">従業員パスワード変更</a></li>
+        <li><a href="{% url 'change_password_1' %}">従業員パスワード変更</a></li>
         <li><a href="#">患者登録機能</a></li>
         <li><a href="#">患者検索</a></li>
-        <li><a href="#">ログアウト</a></li>
+        <li><a href="#">患者テーブルの保険証情報変更</a></li>
+        <li><a href="{% url 'logout' %}">ログアウト</a></li>
     </ul>
 </body>
 </html>
