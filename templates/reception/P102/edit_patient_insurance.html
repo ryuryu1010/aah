@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>保険証が切れている患者検索</title>
+    <title>保険証情報編集</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,8 +29,13 @@
             font-weight: bold;
         }
 
-        input[type="checkbox"] {
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            padding: 8px;
             margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
         }
 
         input[type="submit"] {
@@ -49,11 +54,14 @@
     </style>
 </head>
 <body>
-    <h1>有効期限切れ患者検索</h1>
-    <form action="#" method="get">
-        <label for="expiration_date">有効期限切れの患者を検索:</label><br>
-        <input type="date" id="expiration_date" name="expiration_date"><br><br>
-        <input type="submit" value="検索">
+    <h1>保険証情報編集</h1>
+    <form action="{% url 'edit_patient_insurance' patient.patid %}" method="post">
+        {% csrf_token %}
+        <label for="insurance_number">新しい保険証記号番号:</label><br>
+        <input type="text" id="insurance_number" name="insurance_number" placeholder="新しい保険証記号番号を入力" value="{{ patient.hokenmei }}"><br><br>
+        <label for="expiration_date">新しい有効期限:</label><br>
+        <input type="date" id="expiration_date" name="expiration_date" value="{{ patient.hokenexp }}"><br><br>
+        <input type="submit" value="変更確認">
     </form>
 </body>
 </html>

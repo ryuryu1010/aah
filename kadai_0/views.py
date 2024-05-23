@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Employee, Shiiregyosha , Patient
 
@@ -225,3 +225,34 @@ def patient_registration(request):
 def patient_registration_success(request):
     return render(request, '../templates/reception/P101/patient_registration_succes.html')
 
+
+
+
+
+def patient_insurance_change_success(request):
+    return render(request, '../templates/reception/P102/patient_insurance_change_success.html')
+
+
+def patient_list(request):
+    patients = Patient.objects.all()
+    return render(request, '../templates/reception/P102/patient_list.html', {'patients': patients})
+
+
+def edit_patient_insurance(request, patid):
+    patient = get_object_or_404(Patient, patid=patid)
+
+    if request.method == 'POST':
+        insurance_number = request.POST['insurance_number']
+        expiration_date = request.POST['expiration_date']
+
+        if insurance_number:
+            patient.hokenmei = insurance_number
+
+        if expiration_date:
+            patient.hokenexp = expiration_date
+
+        patient.save()
+        messages.success(request, '保険証情報が正常に変更されました。')
+        return redirect('patient_list')
+
+    return render(request, 'reception/P102/edit_patient_insurance.html', {'patient': patient})
