@@ -29,8 +29,12 @@
             font-weight: bold;
         }
 
-        input[type="checkbox"] {
+        input[type="date"] {
+            width: 100%;
+            padding: 8px;
             margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
         }
 
         input[type="submit"] {
@@ -46,14 +50,57 @@
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
     <h1>有効期限切れ患者検索</h1>
-    <form action="#" method="get">
+    <form action="{% url 'insurance_expiration_check' %}" method="get">
         <label for="expiration_date">有効期限切れの患者を検索:</label><br>
         <input type="date" id="expiration_date" name="expiration_date"><br><br>
         <input type="submit" value="検索">
     </form>
+
+    {% if expired_patients %}
+    <h2 style="text-align: center;">有効期限切れの患者一覧</h2>
+    <table>
+        <tr>
+            <th>患者ID</th>
+            <th>患者姓</th>
+            <th>患者名</th>
+            <th>保険証記号番号</th>
+            <th>有効期限</th>
+        </tr>
+        {% for patient in expired_patients %}
+        <tr>
+            <td>{{ patient.patid }}</td>
+            <td>{{ patient.patfname }}</td>
+            <td>{{ patient.patiname }}</td>
+            <td>{{ patient.hokenmei }}</td>
+            <td>{{ patient.hokenexp }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
 </body>
 </html>

@@ -1,6 +1,9 @@
+from datetime import timezone
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import Employee, Shiiregyosha , Patient
+from .models import Employee, Shiiregyosha, Patient
+from datetime import datetime
 
 def login(request):
     if request.method == "GET":
@@ -256,3 +259,15 @@ def edit_patient_insurance(request, patid):
         return redirect('patient_list')
 
     return render(request, 'reception/P102/edit_patient_insurance.html', {'patient': patient})
+
+
+
+def insurance_expiration_check(request):
+    expired_patients = []
+    if request.method == 'GET':
+        expiration_date_str = request.GET.get('expiration_date')
+        if expiration_date_str:
+            expiration_date = datetime.strptime(expiration_date_str, '%Y-%m-%d').date()
+            expired_patients = Patient.objects.filter(hokenexp__lt=expiration_date)
+
+    return render(request, '../templates/reception/P104/Search_for_patients.html', {'expired_patients': expired_patients})

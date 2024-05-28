@@ -19,6 +19,7 @@ urlpatterns = [
     path('patient_registration_succes/', views.patient_registration_success, name='patient_registration_success'),
     path('patients/', views.patient_list, name='patient_list'),
     path('edit_patient_insurance/<str:patid>/', views.edit_patient_insurance, name='edit_patient_insurance'),
+    path('insurance_expiration_check/', views.insurance_expiration_check, name='insurance_expiration_check'),
 
 
     # 他のパスの定義を追加してください
