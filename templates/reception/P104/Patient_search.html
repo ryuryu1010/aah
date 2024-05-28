@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>患者検索</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="date"],
+        input[type="text"],
+        input[type="submit"] {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .message {
+            text-align: center;
+            color: #ff0000;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>患者検索</h1>
+    <div class="container">
+        {% if emprole == 2 %}
+        <form action="{% url 'search_patients' %}" method="get">
+            <label for="expiration_date">有効期限切れの患者を検索:</label><br>
+            <input type="date" id="expiration_date" name="expiration_date"><br>
+            <input type="submit" value="検索">
+        </form>
+        {% endif %}
+        {% if patients %}
+        <table>
+            <tr>
+                {% if emprole == 2 %}
+                    <th>患者ID</th>
+                    <th>患者姓</th>
+                    <th>患者名</th>
+                    <th>保険証記号番号</th>
+                    <th>有効期限</th>
+                {% elif emprole == 1 %}
+                    <th>患者ID</th>
+                    <th>患者姓</th>
+                    <th>患者名</th>
+                {% endif %}
+            </tr>
+            {% for patient in patients %}
+            <tr>
+                {% if emprole == 2 %}
+                    <td>{{ patient.patid }}</td>
+                    <td>{{ patient.patfname }}</td>
+                    <td>{{ patient.patiname }}</td>
+                    <td>{{ patient.hokenmei }}</td>
+                    <td>{{ patient.hokenexp }}</td>
+                {% elif emprole == 1 %}
+                    <td>{{ patient.patid }}</td>
+                    <td>{{ patient.patfname }}</td>
+                    <td>{{ patient.patiname }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="message">該当する患者が見つかりません。</div>
+        {% endif %}
+    </div>
+</body>
+</html>

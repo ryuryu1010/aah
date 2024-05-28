@@ -262,12 +262,21 @@ def edit_patient_insurance(request, patid):
 
 
 
-def insurance_expiration_check(request):
-    expired_patients = []
-    if request.method == 'GET':
-        expiration_date_str = request.GET.get('expiration_date')
-        if expiration_date_str:
-            expiration_date = datetime.strptime(expiration_date_str, '%Y-%m-%d').date()
-            expired_patients = Patient.objects.filter(hokenexp__lt=expiration_date)
 
-    return render(request, '../templates/reception/P104/Search_for_patients.html', {'expired_patients': expired_patients})
+
+def search_patients(request):
+    patients = []
+    expiration_date_str = request.GET.get('expiration_date')
+    if expiration_date_str:
+        expiration_date = datetime.strptime(expiration_date_str, '%Y-%m-%d').date()
+        patients = Patient.objects.filter(hokenexp__lt=expiration_date)
+    else:
+        patients = Patient.objects.all()
+
+    emprole = request.session.get('emp_role', None)
+
+    context = {
+        'patients': patients,
+        'emprole': emprole,
+    }
+    return render(request, 'reception/P104/Patient_search.html', context)
