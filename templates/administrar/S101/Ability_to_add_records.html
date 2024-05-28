@@ -10,31 +10,43 @@
             margin: 0;
             padding: 0;
             background-color: #f7f7f7;
+            color: #333;
+        }
+
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
         }
 
         form {
-            width: 50%;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
         }
 
         label {
             font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
         }
 
-        input[type="text"], input[type="number"] {
+        input[type="text"],
+        input[type="number"] {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
 
         input[type="submit"] {
@@ -43,32 +55,54 @@
             background-color: #007bff;
             color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
         }
 
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <h1>仕入先追加フォーム</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="shiireid">仕入れ先 ID:</label><br>
-        <input type="text" id="shiireid" name="shiireid" required><br>
-        <label for="shiiremei">仕入れ先名:</label><br>
-        <input type="text" id="shiiremei" name="shiiremei" required><br>
-        <label for="shiireaddress">仕入れ先住所:</label><br>
-        <input type="text" id="shiireaddress" name="shiireaddress" required><br>
-        <label for="shiiretel">仕入れ先電話番号:</label><br>
-        <input type="text" id="shiiretel" name="shiiretel" required><br>
-        <label for="shihonkin">資本金:</label><br>
-        <input type="number" id="shihonkin" name="shihonkin" required><br>
-        <label for="nouki">納期:</label><br>
-        <input type="number" id="nouki" name="nouki" required><br><br>
-        <input type="submit" value="追加する">
-    </form>
+    <div class="container">
+        <h1>仕入先追加フォーム</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label for="shiireid">仕入れ先 ID:</label>
+            <input type="text" id="shiireid" name="shiireid" required>
+
+            <label for="shiiremei">仕入れ先名:</label>
+            <input type="text" id="shiiremei" name="shiiremei" required>
+
+            <label for="shiireaddress">仕入れ先住所:</label>
+            <input type="text" id="shiireaddress" name="shiireaddress" required>
+
+            <label for="shiiretel">仕入れ先電話番号:</label>
+            <input type="text" id="shiiretel" name="shiiretel" required>
+
+            <label for="shihonkin">資本金:</label>
+            <input type="number" id="shihonkin" name="shihonkin" required>
+
+            <label for="nouki">納期:</label>
+            <input type="number" id="nouki" name="nouki" required>
+
+            <input type="submit" value="追加する">
+        </form>
+        <a href="{% url 'a_index' %}">管理者画面に戻る</a>
+    </div>
 </body>
 </html>

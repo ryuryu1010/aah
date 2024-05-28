@@ -10,31 +10,36 @@
             margin: 0;
             padding: 0;
             background-color: #f7f7f7;
+            color: #333;
         }
 
         h1 {
             text-align: center;
+            color: #007bff;
+            margin-top: 20px;
         }
 
         form {
             width: 50%;
-            margin: 0 auto;
+            margin: 20px auto;
             background-color: #fff;
             padding: 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         label {
             font-weight: bold;
+            color: #333;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
 
         input[type="submit"] {
@@ -43,8 +48,9 @@
             background-color: #007bff;
             color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
         }
 
         input[type="submit"]:hover {
@@ -69,6 +75,41 @@
             color: #155724;
             border: 1px solid #c3e6cb;
         }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 12px;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -84,8 +125,8 @@
 
     <form method="post">
         {% csrf_token %}
-        <label for="address_search">住所を入力してください:</label><br>
-        <input type="text" id="address_search" name="address_search"><br><br>
+        <label for="address_search">住所を入力してください:</label>
+        <input type="text" id="address_search" name="address_search">
         <input type="submit" value="検索">
     </form>
 
@@ -116,8 +157,10 @@
         </table>
     {% else %}
         {% if address_search %}
-            <p>該当する仕入れ先が見つかりませんでした。</p>
+            <p style="text-align: center; color: #333;">該当する仕入れ先が見つかりませんでした。</p>
         {% endif %}
     {% endif %}
+
+    <a href="{% url 'a_index' %}">管理者画面に戻る</a>
 </body>
 </html>

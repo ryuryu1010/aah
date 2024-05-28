@@ -14,6 +14,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            color: #333;
         }
         .container {
             background-color: #ffffff;
@@ -23,7 +24,7 @@
             text-align: center;
         }
         h1 {
-            color: #333333;
+            color: #007bff;
         }
         ul {
             list-style-type: none;
@@ -50,14 +51,14 @@
 </head>
 <body>
     <div class="container">
-    <h1>受付用ホーム画面</h1>
-    <ul>
-        <li><a href="{% url 'change_password_1' %}">従業員パスワード変更</a></li>
-        <li><a href="{% url 'patient_registration' %}">患者登録機能</a></li>
-        <li><a href="{% url 'search_patients' %}">保険証切れ患者検索</a></li>
-        <li><a href="{% url  'patient_list' %}">患者テーブルの保険証情報変更</a></li>
-        <li><a href="{% url 'logout' %}">ログアウト</a></li>
-    </ul>
+        <h1>受付用ホーム画面</h1>
+        <ul>
+            <li><a href="{% url 'patient_registration' %}">患者登録機能</a></li>
+            <li><a href="{% url 'change_password' %}">従業員パスワード変更</a></li>
+            <li><a href="{% url 'search_patients' %}">保険証切れ患者検索</a></li>
+            <li><a href="{% url 'patient_list' %}">患者テーブルの保険証情報変更</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
+        </ul>
     </div>
 </body>
 </html>

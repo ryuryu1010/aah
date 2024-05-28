@@ -22,12 +22,10 @@ urlpatterns = [
     path('supplier_TBL/', views.supplier_TBL, name='supplier_TBL'),
     # 住所検索機能
     path('address_search/', views.address_search, name='address_search'),
-    # 管理者用の従業員表のパスワード変更機能
-    path('change_password_0/', views.change_password_0, name='change_password_0'),
+    # 従業員表のパスワード変更機能
+    path('change_password/', views.change_password, name='change_password'),
     # 従業員（パスワード）機能
     path('password_change_success/', views.password_change_success, name='password_change_success'),
-    # 受付用の従業員表のパスワード変更機能
-    path('change_password_1/', views.change_password_1, name='change_password_1'),
     # 患者登録機能
     path('patient_registration/', views.patient_registration, name='patient_registration'),
     # 登録成功画面

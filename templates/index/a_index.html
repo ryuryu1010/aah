@@ -14,6 +14,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            color: #333;
         }
         .container {
             background-color: #ffffff;
@@ -23,7 +24,7 @@
             text-align: center;
         }
         h1 {
-            color: #333333;
+            color: #007bff;
         }
         ul {
             list-style-type: none;
@@ -53,12 +54,12 @@
         <h1>管理者用ホーム画面</h1>
         <ul>
             <li><a href="{% url 'employee_registration' %}">従業員登録</a></li>
-             <li><a href="{% url 'employee_list' %}">従業員リスト</a></li>
-            <li><a href="{% url 'change_password_0' %}">従業員パスワード変更</a></li>
+            <li><a href="{% url 'employee_list' %}">従業員リスト</a></li>
+            <li><a href="{% url 'change_password' %}">従業員パスワード変更</a></li>
             <li><a href="{% url 'address_search' %}">住居検索</a></li>
             <li><a href="{% url 'supplier_TBL' %}">仕入先テーブル</a></li>
             <li><a href="{% url 'Add_vendor' %}">仕入先追加フォーム</a></li>
-             <li><a href="{% url 'logout' %}">ログアウト</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
         </ul>
     </div>
 </body>

@@ -1,21 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Registration</title>
+    <title>従業員登録</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+        }
         .registration-container {
             max-width: 400px;
             margin: 50px auto;
             padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .registration-container h2 {
             margin-bottom: 20px;
             text-align: center;
+            color: #007bff;
         }
         .input-group {
             margin-bottom: 15px;
@@ -23,13 +32,18 @@
         .input-group label {
             display: block;
             margin-bottom: 5px;
+            color: #333;
         }
         .input-group input, .input-group select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
+            padding: 10px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
             box-sizing: border-box;
+            color: #333;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: #0056b3;
         }
         .error-message {
             color: red;
@@ -38,19 +52,25 @@
         button[type="submit"] {
             width: 100%;
             padding: 10px;
-            background-color: #4CAF50;
+            background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 3px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
         }
         button[type="submit"]:hover {
-            background-color: #45a049;
+            background-color: #0056b3;
         }
         a {
             display: block;
             text-align: center;
             margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #0056b3;
         }
     </style>
 </head>
@@ -93,6 +113,7 @@
                 {{ message }}
             {% endfor %}
         </p>
+        <a href="{% url 'a_index' %}">管理者画面に戻る</a>
     </div>
 </body>
 </html>

@@ -3,50 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ホーム画面</title>
+    <title>医師用ホーム画面</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f7f7f7;
+            color: #333;
         }
-
         h1 {
             text-align: center;
+            color: #007bff;
+            margin-top: 20px;
         }
-
         ul {
             list-style-type: none;
             padding: 0;
             margin: 50px auto;
             text-align: center;
         }
-
         li {
             margin-bottom: 20px;
         }
-
         a {
             display: block;
             padding: 20px;
-            background-color: #007bff; /* リンクの背景色 */
+            background-color: #007bff; 
             color: #fff;
             text-decoration: none;
             border-radius: 10px;
             font-size: 18px;
             transition: background-color 0.3s ease;
         }
-
         a:hover {
-            background-color: #0056b3; /* ホバー時の背景色 */
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <h1>医師用ホーム画面</h1>
     <ul>
-        <li><a href="{% url 'search_patients'  %}">全患者検索</a></li>
+        <li><a href="{% url 'search_patients' %}">全患者検索</a></li>
         <li><a href="#">薬物追加投与</a></li>
         <li><a href="#">薬物投与削除</a></li>
         <li><a href="#">処置確定</a></li>
