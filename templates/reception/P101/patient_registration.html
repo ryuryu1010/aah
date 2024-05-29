@@ -10,10 +10,12 @@
             margin: 0;
             padding: 0;
             background-color: #f7f7f7;
+            color: #333;
         }
 
         h1 {
             text-align: center;
+            color: #007bff;
             margin-top: 20px;
         }
 
@@ -22,21 +24,23 @@
             margin: 20px auto;
             background-color: #fff;
             padding: 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         label {
             font-weight: bold;
+            color: #333;
         }
 
         input[type="text"],
         input[type="date"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
 
         input[type="submit"] {
@@ -57,21 +61,36 @@
             width: 50%;
             margin: 20px auto;
             padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f7f7f7;
             border-radius: 5px;
         }
 
         .messages.error {
             color: #d9534f;
-            border-color: #d9534f;
+            border: 1px solid #d9534f;
             background-color: #f2dede;
         }
 
         .messages.success {
             color: #3c763d;
-            border-color: #d6e9c6;
+            border: 1px solid #d6e9c6;
             background-color: #dff0d8;
+        }
+
+        a {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        a:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -86,17 +105,23 @@
     </div>
     <form method="post" action="{% url 'patient_registration' %}">
         {% csrf_token %}
-        <label for="patid">患者ID:</label><br>
-        <input type="text" id="patid" name="patid" placeholder="患者IDを入力"><br><br>
-        <label for="patiname">患者姓:</label><br>
-       <input type="text" id="patiname" name="patiname" placeholder="患者名を入力"><br><br> 
-        <label for="patfname">患者名:</label><br>
-        <input type="text" id="patfname" name="patfname" placeholder="患者姓を入力"><br><br>
-        <label for="hokenmei">保険証記号番号:</label><br>
-        <input type="text" id="hokenmei" name="hokenmei" placeholder="保険証記号番号を入力"><br><br>
-        <label for="hokenexp">有効期限:</label><br>
-        <input type="date" id="hokenexp" name="hokenexp"><br><br>
+        <label for="patid">患者ID:</label>
+        <input type="text" id="patid" name="patid" placeholder="患者IDを入力" required>
+
+        <label for="patiname">患者姓:</label>
+        <input type="text" id="patiname" name="patiname" placeholder="患者名を入力" required>
+
+        <label for="patfname">患者名:</label>
+        <input type="text" id="patfname" name="patfname" placeholder="患者姓を入力" required>
+
+        <label for="hokenmei">保険証記号番号:</label>
+        <input type="text" id="hokenmei" name="hokenmei" placeholder="保険証記号番号を入力" required>
+
+        <label for="hokenexp">有効期限:</label>
+        <input type="date" id="hokenexp" name="hokenexp" required>
+
         <input type="submit" value="登録確認">
     </form>
+    <a href="{% url 'r_index' %}">受付ホーム画面に戻る</a>
 </body>
 </html>

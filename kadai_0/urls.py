@@ -36,7 +36,6 @@ urlpatterns = [
     path('edit_patient_insurance/<str:patid>/', views.edit_patient_insurance, name='edit_patient_insurance'),
     #   患者検索（保険証切れ＆全件）機能
     path('search_patients/', views.search_patients, name='search_patients'),
-
     #
 
 ]

@@ -10,6 +10,13 @@
             margin: 0;
             padding: 0;
             background-color: #f7f7f7;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-top: 20px;
         }
 
         table {
@@ -44,10 +51,27 @@
         .edit-button:hover {
             background-color: #0056b3;
         }
+
+        a {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        a:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <h1 style="text-align: center;">患者リスト</h1>
+    <h1>患者リスト</h1>
     <table>
         <tr>
             <th>患者ID</th>
@@ -68,5 +92,6 @@
         </tr>
         {% endfor %}
     </table>
+    <a href="{% url 'r_index' %}">受付ホーム画面に戻る</a>
 </body>
 </html>

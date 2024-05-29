@@ -130,38 +130,37 @@ def address_search(request):
 
 
 def change_password(request):
-        if request.method == 'POST':
-            empid = request.POST['employee_id']
-            current_password = request.POST['current_password']
-            new_password = request.POST['new_password']
-            confirm_new_password = request.POST['confirm_new_password']
+    if request.method == 'POST':
+        empid = request.POST['employee_id']
+        current_password = request.POST['current_password']
+        new_password = request.POST['new_password']
+        confirm_new_password = request.POST['confirm_new_password']
 
-            try:
-                employee = Employee.objects.get(empid=empid, emppasswd=current_password)
-            except Employee.DoesNotExist:
-                messages.error(request, '従業員IDまたは現在のパスワードが正しくありません。')
-                return render(request, '../templates/administrar/E103/password_change_error.html')
+        try:
+            employee = Employee.objects.get(empid=empid, emppasswd=current_password)
+        except Employee.DoesNotExist:
+            messages.error(request, '従業員IDまたは現在のパスワードが正しくありません。')
+            return render(request, 'administrar/E103/password_change_error.html')
 
-            if employee.emprole == 0:
-                messages.error(request, '管理者のパスワードは変更できません。')
-                return render(request, '../templates/administrar/E103/password_change_error.html')
+        if employee.emprole == 0:
+            messages.error(request, '管理者のパスワードは変更できません。')
+            return render(request, 'administrar/E103/password_change_error.html')
 
-            if new_password != confirm_new_password:
-                messages.error(request, '新しいパスワードが一致しません。')
-                return render(request, '../templates/administrar/E103/password_change_error.html')
+        if new_password != confirm_new_password:
+            messages.error(request, '新しいパスワードが一致しません。')
+            return render(request, 'administrar/E103/password_change_error.html')
 
-            employee.emppasswd = new_password
-            employee.save()
-            messages.success(request, 'パスワードが正常に変更されました。')
-            return redirect('password_change_success')  # 適切なリダイレクト先に変更してください
+        employee.emppasswd = new_password
+        employee.save()
+        messages.success(request, 'パスワードが正常に変更されました。')
+        return redirect('password_change_success')
 
-        return render(request,
-                      '../templates/administrar/E103//Employee_password_change.html')
-
-
+    emprole = request.session.get('emp_role')
+    context = {'emprole': emprole}
+    return render(request, 'administrar/E103/Employee_password_change.html', context)
 
 def password_change_success(request):
-    return render(request, '../templates/administrar/E103/password_change_success.html')
+    return render(request, 'administrar/E103/password_change_success.html')
 
 
 def patient_registration(request):

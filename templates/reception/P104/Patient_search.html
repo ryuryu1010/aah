@@ -10,10 +10,13 @@
             margin: 0;
             padding: 0;
             background-color: #f7f7f7;
+            color: #333;
         }
 
         h1 {
             text-align: center;
+            color: #007bff;
+            margin-top: 20px;
         }
 
         .container {
@@ -21,7 +24,7 @@
             margin: 20px auto;
             background-color: #fff;
             padding: 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -31,15 +34,28 @@
 
         label {
             font-weight: bold;
+            color: #333;
         }
 
         input[type="date"],
         input[type="text"],
         input[type="submit"] {
+            width: calc(100% - 20px);
             padding: 10px;
             margin: 10px 0;
-            border: 1px solid #ccc;
+            border: 1px solid #007bff;
             border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
         }
 
         table {
@@ -50,7 +66,7 @@
 
         th, td {
             padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             text-align: center;
         }
 
@@ -67,6 +83,23 @@
             text-align: center;
             color: #ff0000;
             font-weight: bold;
+        }
+
+        a {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        a:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -115,5 +148,10 @@
         <div class="message">該当する患者が見つかりません。</div>
         {% endif %}
     </div>
+     {% if emprole == 2 %}
+            <a href="{% url 'r_index' %}">受付画面に戻る</a>
+        {% elif emprole == 1 %}
+            <a href="{% url 'd_index' %}">医師画面に戻る</a>
+        {% endif %}
 </body>
 </html>

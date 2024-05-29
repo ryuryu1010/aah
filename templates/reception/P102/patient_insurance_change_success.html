@@ -12,6 +12,7 @@
             background-color: #f7f7f7;
             text-align: center;
             padding-top: 50px;
+            color: #333;
         }
 
         h1 {
@@ -41,5 +42,6 @@
     <h1>保険証情報の変更が成功しました</h1>
     <p>保険証情報が正常に変更されました。</p>
     <a href="{% url 'change_patient_insurance' %}">保険証情報変更に戻る</a>
+    <a href="{% url 'r_index' %}">受付ホーム画面に戻る</a>
 </body>
 </html>

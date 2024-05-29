@@ -10,10 +10,13 @@
             margin: 0;
             padding: 0;
             background-color: #f7f7f7;
+            color: #333;
         }
 
         h1 {
             text-align: center;
+            color: #007bff;
+            margin-top: 20px;
         }
 
         form {
@@ -21,21 +24,23 @@
             margin: 20px auto;
             background-color: #fff;
             padding: 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         label {
             font-weight: bold;
+            color: #333;
         }
 
         input[type="text"],
         input[type="date"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
 
         input[type="submit"] {
@@ -51,17 +56,37 @@
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
+
+        a {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        a:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <h1>保険証情報編集</h1>
     <form action="{% url 'edit_patient_insurance' patient.patid %}" method="post">
         {% csrf_token %}
-        <label for="insurance_number">新しい保険証記号番号:</label><br>
-        <input type="text" id="insurance_number" name="insurance_number" placeholder="新しい保険証記号番号を入力" value="{{ patient.hokenmei }}"><br><br>
-        <label for="expiration_date">新しい有効期限:</label><br>
-        <input type="date" id="expiration_date" name="expiration_date" value="{{ patient.hokenexp }}"><br><br>
+        <label for="insurance_number">新しい保険証記号番号:</label>
+        <input type="text" id="insurance_number" name="insurance_number" placeholder="新しい保険証記号番号を入力" value="{{ patient.hokenmei }}" required>
+
+        <label for="expiration_date">新しい有効期限:</label>
+        <input type="date" id="expiration_date" name="expiration_date" value="{{ patient.hokenexp }}" required>
+
         <input type="submit" value="変更確認">
     </form>
+    <a href="{% url 'r_index' %}">受付ホーム画面に戻る</a>
 </body>
 </html>
