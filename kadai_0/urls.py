@@ -34,7 +34,7 @@ urlpatterns = [
     path('patients/', views.patient_list, name='patient_list'),
     # 保険証情報編集機能
     path('edit_patient_insurance/<str:patid>/', views.edit_patient_insurance, name='edit_patient_insurance'),
-    #   患者検索（保険証切れ＆全件）機能
+    # 患者検索（保険証切れ＆全件）機能
     path('search_patients/', views.search_patients, name='search_patients'),
     # 追加
     path('add_treatment/', views.add_treatment, name='add_treatment'),
@@ -46,7 +46,6 @@ urlpatterns = [
     path('treatment_success/', views.treatment_success, name='treatment_success'),
     path('treatment_deleted/', views.treatment_deleted, name='treatment_deleted'),
     # 処置履歴
-
-
+    path('view_treatment_history/', views.view_treatment_history, name='view_treatment_history'),
+    path('treatment_history/<str:patid>/', views.treatment_history, name='treatment_history'),
 ]
-

@@ -318,3 +318,52 @@ def treatment_success(request):
 
 def treatment_deleted(request):
     return render(request, '../templates/doctor/D102/treatment_deleted.html')
+
+
+
+def view_treatment_history(request):
+    if request.method == 'POST':
+        patid = request.POST.get('patid')
+        if patid:
+            if Patient.objects.filter(patid=patid).exists():
+                return redirect('treatment_history', patid=patid)
+            else:
+                messages.error(request, '該当する患者が見つかりません。')
+        else:
+            patients = Patient.objects.all()
+            return render(request, '../templates/doctor/D104/treatment_history.html', {'patients': patients})
+
+    patients = Patient.objects.all()
+    return render(request, '../templates/doctor/D104/treatment_history.html', {'patients': patients})
+
+
+
+def treatment_history(request, patid):
+    patient = get_object_or_404(Patient, patid=patid)
+    treatments = Treatment.objects.filter(patient=patient)
+
+    if request.method == 'POST':
+        if 'delete' in request.POST:
+            treatment_id = request.POST.get('treatment_id')
+            treatment = get_object_or_404(Treatment, pk=treatment_id)
+            treatment.delete()
+            messages.success(request, '処置が削除されました。')
+            return redirect('treatment_history', patid=patid)
+
+        if 'add' in request.POST:
+            medicine_id = request.POST.get('medicine_id')
+            quantity = request.POST.get('quantity')
+            medicine = get_object_or_404(Medicine, pk=medicine_id)
+            doctor = get_object_or_404(Employee, empid=request.session.get('userID'))
+            Treatment.objects.create(patient=patient, doctor=doctor, medicine=medicine, quantity=quantity, confirmed=False)
+            messages.success(request, '処置が追加されました。')
+            return redirect('treatment_history', patid=patid)
+
+    medicines = Medicine.objects.all()
+    context = {
+        'patient': patient,
+        'treatments': treatments,
+        'medicines': medicines
+    }
+
+    return render(request, '../templates/doctor/D104/treatment_history.html', context)
