@@ -2,7 +2,7 @@ from datetime import timezone
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import Employee, Shiiregyosha, Patient
+from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine
 from datetime import datetime
 
 def login(request):
@@ -248,3 +248,49 @@ def search_patients(request):
         'emprole': emprole,
     }
     return render(request, 'reception/P104/Patient_search.html', context)
+
+
+
+
+def add_treatment(request):
+    if request.method == 'POST':
+        patient_id = request.POST.get('patient_id')
+        doctor_id = request.POST.get('doctor_id')
+        medicine_id = request.POST.get('medicine_id')
+        quantity = request.POST.get('quantity')
+
+        patient = get_object_or_404(Patient, pk=patient_id)
+        doctor = get_object_or_404(Employee, pk=doctor_id)
+        medicine = get_object_or_404(Medicine, pk=medicine_id)
+
+        treatment = Treatment(patient=patient, doctor=doctor, medicine=medicine, quantity=quantity)
+        treatment.save()
+
+        return redirect('confirm_treatment', treatment_id=treatment.treatmentid)
+
+    patients = Patient.objects.all()
+    doctors = Employee.objects.filter(emprole=1)
+    medicines = Medicine.objects.all()
+    context = {
+        'patients': patients,
+        'doctors': doctors,
+        'medicines': medicines
+    }
+    return render(request, '../templates/doctor/D101/add_treatment.html', context)
+
+def confirm_treatment(request, treatment_id):
+    treatment = get_object_or_404(Treatment, pk=treatment_id)
+
+    if request.method == 'POST':
+        treatment.confirmed = True
+        treatment.save()
+        messages.success(request, '処置が正常に確定されました。')
+        return redirect('treatment_success')
+
+    context = {
+        'treatment': treatment
+    }
+    return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
+
+def treatment_success(request):
+    return render(request, '../templates/doctor/D103/treatment_success.html')

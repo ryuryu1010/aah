@@ -36,6 +36,15 @@ urlpatterns = [
     path('edit_patient_insurance/<str:patid>/', views.edit_patient_insurance, name='edit_patient_insurance'),
     #   患者検索（保険証切れ＆全件）機能
     path('search_patients/', views.search_patients, name='search_patients'),
-    #
+    # 追加
+    path('add_treatment/', views.add_treatment, name='add_treatment'),
+    # 消去
+
+    # 処置確定
+    path('confirm_treatment/<int:treatment_id>/', views.confirm_treatment, name='confirm_treatment'),
+    # 処置確定成功画面
+    path('treatment_success/', views.treatment_success, name='treatment_success'),
+    # 処置履歴
 
 ]
+
