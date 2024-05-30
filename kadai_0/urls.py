@@ -39,12 +39,14 @@ urlpatterns = [
     # 追加
     path('add_treatment/', views.add_treatment, name='add_treatment'),
     # 消去
-
+    path('delete_treatment/<int:treatment_id>/', views.delete_treatment, name='delete_treatment'),
     # 処置確定
     path('confirm_treatment/<int:treatment_id>/', views.confirm_treatment, name='confirm_treatment'),
     # 処置確定成功画面
     path('treatment_success/', views.treatment_success, name='treatment_success'),
+    path('treatment_deleted/', views.treatment_deleted, name='treatment_deleted'),
     # 処置履歴
+
 
 ]
 

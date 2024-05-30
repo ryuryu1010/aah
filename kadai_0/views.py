@@ -5,6 +5,7 @@ from django.contrib import messages
 from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine
 from datetime import datetime
 
+
 def login(request):
     if request.method == "GET":
         return render(request, '../templates/login/login.html')
@@ -28,11 +29,14 @@ def login(request):
         except Employee.DoesNotExist:
             return render(request, '../templates/login/login_error.html')
 
+
 def a_index(request):
     return render(request, '../templates//index/a_index.html')
 
+
 def r_index(request):
     return render(request, '../templates//index/r_index.html')
+
 
 def d_index(request):
     return render(request, '../templates//index/d_index.html')
@@ -42,6 +46,7 @@ def logout(request):
     from django.contrib.auth import logout as auth_logout
     auth_logout(request)
     return render(request, '../templates/logout/logout.html')
+
 
 def employee_registration(request):
     if request.method == 'POST':
@@ -54,11 +59,13 @@ def employee_registration(request):
 
         if emppasswd1 != emppasswd2:
             messages.error(request, 'Passwords do not match.')
-            return render(request, '../templates/administrar/E101/error.html', {'error_message': 'Passwords do not match.'})
+            return render(request, '../templates/administrar/E101/error.html',
+                          {'error_message': 'Passwords do not match.'})
 
         if Employee.objects.filter(empid=empid).exists():
             messages.error(request, 'Employee ID already exists.')
-            return render(request, '../templates/administrar/E101/error.html', {'error_message': 'Passwords do not match.'})
+            return render(request, '../templates/administrar/E101/error.html',
+                          {'error_message': 'Passwords do not match.'})
 
         employee = Employee(
             empid=empid,
@@ -73,10 +80,10 @@ def employee_registration(request):
 
     return render(request, '../templates/administrar/E101/Current _employee_registration_function.html')
 
+
 def employee_list(request):
     employees = Employee.objects.all()
     return render(request, '../templates/administrar/E101/employee_list.html', {'employees': employees})
-
 
 
 def Add_vendor(request):
@@ -89,7 +96,8 @@ def Add_vendor(request):
         nouki = request.POST['nouki']
 
         if Shiiregyosha.objects.filter(shiireid=shiireid).exists():
-            return render(request, '../templates/administrar/S101/error.html', {'error_message': 'Supplier ID already exists.'})
+            return render(request, '../templates/administrar/S101/error.html',
+                          {'error_message': 'Supplier ID already exists.'})
 
         supplier = Shiiregyosha(
             shiireid=shiireid,
@@ -104,6 +112,7 @@ def Add_vendor(request):
         return redirect('supplier_TBL')
 
     return render(request, '../templates/administrar/S101/Ability_to_add_records.html')
+
 
 def supplier_TBL(request):
     suppliers = Shiiregyosha.objects.all()
@@ -126,7 +135,6 @@ def address_search(request):
         else:
             messages.error(request, '住所を入力してください。')
             return render(request, '../templates/administrar/S103/Housing_search.html')
-
 
 
 def change_password(request):
@@ -159,6 +167,7 @@ def change_password(request):
     context = {'emprole': emprole}
     return render(request, 'administrar/E103/Employee_password_change.html', context)
 
+
 def password_change_success(request):
     return render(request, 'administrar/E103/password_change_success.html')
 
@@ -173,11 +182,13 @@ def patient_registration(request):
 
         if not all([patient_id, last_name, first_name, insurance_number, expiration_date]):
             messages.error(request, '全ての項目を入力してください。')
-            return render(request, '../templates/reception/P101/patient_registration_error.html', {'error_message': '全ての項目を入力してください。'})
+            return render(request, '../templates/reception/P101/patient_registration_error.html',
+                          {'error_message': '全ての項目を入力してください。'})
 
         if Patient.objects.filter(patid=patient_id).exists():
             messages.error(request, '患者IDが既に存在します。')
-            return render(request, '../templates/reception/P101/patient_registration_error.html', {'error_message': '患者IDが既に存在します。'})
+            return render(request, '../templates/reception/P101/patient_registration_error.html',
+                          {'error_message': '患者IDが既に存在します。'})
 
         patient = Patient(
             patid=patient_id,
@@ -193,11 +204,9 @@ def patient_registration(request):
 
     return render(request, '../templates/reception/P101/Patient_registration.html')
 
+
 def patient_registration_success(request):
     return render(request, '../templates/reception/P101/patient_registration_succes.html')
-
-
-
 
 
 def patient_insurance_change_success(request):
@@ -229,9 +238,6 @@ def edit_patient_insurance(request, patid):
     return render(request, 'reception/P102/edit_patient_insurance.html', {'patient': patient})
 
 
-
-
-
 def search_patients(request):
     patients = []
     expiration_date_str = request.GET.get('expiration_date')
@@ -248,8 +254,6 @@ def search_patients(request):
         'emprole': emprole,
     }
     return render(request, 'reception/P104/Patient_search.html', context)
-
-
 
 
 def add_treatment(request):
@@ -278,6 +282,7 @@ def add_treatment(request):
     }
     return render(request, '../templates/doctor/D101/add_treatment.html', context)
 
+
 def confirm_treatment(request, treatment_id):
     treatment = get_object_or_404(Treatment, pk=treatment_id)
 
@@ -292,5 +297,24 @@ def confirm_treatment(request, treatment_id):
     }
     return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
 
+
+def delete_treatment(request, treatment_id):
+    treatment = get_object_or_404(Treatment, pk=treatment_id)
+
+    if request.method == 'POST':
+        treatment.delete()
+        messages.success(request, '処置が正常に削除されました。')
+        return redirect('treatment_deleted')
+
+    context = {
+        'treatment': treatment
+    }
+    return render(request, '../templates/doctor/D102/delete_treatment.html', context)
+
+
 def treatment_success(request):
-    return render(request, '../templates/doctor/D103/treatment_success.html')
+    return render(request, '../templates/doctor/D101/treatment_success.html')
+
+
+def treatment_deleted(request):
+    return render(request, '../templates/doctor/D102/treatment_deleted.html')
