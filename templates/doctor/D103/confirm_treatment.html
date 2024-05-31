@@ -78,7 +78,7 @@
             {% csrf_token %}
             <input type="submit" value="処置確定">
         </form>
-        <a href="{% url 'delete_treatment' treatment_id=treatment.treatmentid %}">削除</a>
+        <a href="{% url 'decrease_treatment_quantity' treatment_id=treatment.treatmentid %}">削除</a>
         <a href="{% url 'd_index' %}">医師画面に戻る</a>
     </div>
 </body>

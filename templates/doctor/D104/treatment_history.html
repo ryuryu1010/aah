@@ -91,92 +91,75 @@
 <body>
     <div class="container">
         <h1>処置履歴確認</h1>
-
-        <div class="messages">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="messages {{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        </div>
-
-        <form method="post" action="{% url 'view_treatment_history' %}">
+        <form method="post" action="{% url 'treatment_history' %}">
             {% csrf_token %}
             <label for="patid">患者ID:</label>
             <input type="text" id="patid" name="patid">
-            <input type="submit" value="検索">
+            <input type="submit" name="patid_search" value="検索">
+            <input type="submit" name="all_patients" value="全件表示">
         </form>
 
-        {% if patients %}
-            <h2>患者一覧</h2>
-            <table>
-                <tr>
-                    <th>患者ID</th>
-                    <th>姓</th>
-                    <th>名</th>
-                </tr>
-                {% for patient in patients %}
-                    <tr>
-                        <td><a href="{% url 'treatment_history' patient.patid %}">{{ patient.patid }}</a></td>
-                        <td>{{ patient.patfname }}</td>
-                        <td>{{ patient.patiname }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        {% endif %}
-        
         {% if patient %}
-            <h1>処置履歴: {{ patient.patid }} {{ patient.patfname }} {{ patient.patiname }}</h1>
+            <h2>処置履歴: {{ patient.patid }} {{ patient.patfname }} {{ patient.patiname }}</h2>
             {% if treatments %}
                 <table>
                     <tr>
+                        <th>患者ID</th>
+                        <th>姓</th>
+                        <th>名</th>
                         <th>処置ID</th>
                         <th>医師ID</th>
                         <th>薬剤ID</th>
                         <th>数量</th>
                         <th>処置日</th>
-                        <th>確定済み</th>
-                        <th>操作</th>
                     </tr>
                     {% for treatment in treatments %}
                         <tr>
+                            <td>{{ patient.patid }}</td>
+                            <td>{{ patient.patfname }}</td>
+                            <td>{{ patient.patiname }}</td>
                             <td>{{ treatment.treatmentid }}</td>
                             <td>{{ treatment.doctor.empid }}</td>
                             <td>{{ treatment.medicine.medicineid }}</td>
                             <td>{{ treatment.quantity }}</td>
                             <td>{{ treatment.treatment_date }}</td>
-                            <td>{{ treatment.confirmed|yesno:"はい,いいえ" }}</td>
-                            <td>
-                                <form method="post" action="">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="treatment_id" value="{{ treatment.treatmentid }}">
-                                    <input type="submit" name="delete" value="削除">
-                                </form>
-                            </td>
                         </tr>
                     {% endfor %}
                 </table>
             {% else %}
                 <p class="no-data">該当する処置履歴が見つかりません。</p>
             {% endif %}
-            
-            <h2>新しい処置を追加</h2>
-            <form method="post" action="">
-                {% csrf_token %}
-                <label for="medicine_id">薬剤ID:</label>
-                <select id="medicine_id" name="medicine_id">
-                    {% for medicine in medicines %}
-                        <option value="{{ medicine.medicineid }}">{{ medicine.medicineid }} - {{ medicine.medicinename }}</option>
+        {% elif patients %}
+            <h2>全患者の処置履歴</h2>
+            {% if treatments %}
+                <table>
+                    <tr>
+                        <th>患者ID</th>
+                        <th>姓</th>
+                        <th>名</th>
+                        <th>処置ID</th>
+                        <th>医師ID</th>
+                        <th>薬剤ID</th>
+                        <th>数量</th>
+                        <th>処置日</th>
+                    </tr>
+                    {% for treatment in treatments %}
+                        <tr>
+                            <td>{{ treatment.patient.patid }}</td>
+                            <td>{{ treatment.patient.patfname }}</td>
+                            <td>{{ treatment.patient.patiname }}</td>
+                            <td>{{ treatment.treatmentid }}</td>
+                            <td>{{ treatment.doctor.empid }}</td>
+                            <td>{{ treatment.medicine.medicineid }}</td>
+                            <td>{{ treatment.quantity }}</td>
+                            <td>{{ treatment.treatment_date }}</td>
+                        </tr>
                     {% endfor %}
-                </select>
-                <label for="quantity">数量:</label>
-                <input type="number" id="quantity" name="quantity" required>
-                <input type="submit" name="add" value="追加">
-            </form>
+                </table>
+            {% else %}
+                <p class="no-data">処置履歴が見つかりません。</p>
+            {% endif %}
         {% endif %}
-
-        <a href="{% url 'view_treatment_history' %}">別の患者IDを指定する</a>
-        <a href="{% url 'd_index' %}">医師画面に戻る</a>
     </div>
 </body>
 </html>

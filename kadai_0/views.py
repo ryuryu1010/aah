@@ -283,6 +283,68 @@ def add_treatment(request):
     return render(request, '../templates/doctor/D101/add_treatment.html', context)
 
 
+
+
+def treatment_success(request):
+    return render(request, '../templates/doctor/D101/treatment_success.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+def decrease_treatment_quantity(request, treatment_id):
+    treatment = get_object_or_404(Treatment, pk=treatment_id)
+
+    if request.method == 'POST':
+        decrement_value = int(request.POST.get('decrement_value', 1))
+        treatment.quantity -= decrement_value
+        if treatment.quantity < 0:
+            return redirect('error_page', error_message='数量がマイナスになるため処置を減少できません。')
+        elif treatment.quantity == 0:
+            treatment.delete()
+            messages.success(request, '処置が削除されました。')
+            return redirect('treatment_deleted')
+        else:
+            treatment.save()
+            messages.success(request, '処置の数量が減少されました。')
+            return redirect('confirm_treatment', treatment_id=treatment_id)
+
+    context = {
+        'treatment': treatment
+    }
+    return render(request, '../templates/doctor/D102/decrease_treatment_quantity.html', context)
+
+
+
+
+def treatment_deleted(request):
+    return render(request, '../templates/doctor/D102/treatment_deleted.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def confirm_treatment(request, treatment_id):
     treatment = get_object_or_404(Treatment, pk=treatment_id)
 
@@ -298,72 +360,36 @@ def confirm_treatment(request, treatment_id):
     return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
 
 
-def delete_treatment(request, treatment_id):
-    treatment = get_object_or_404(Treatment, pk=treatment_id)
+
+
+def treatment_history(request):
+    patient = None
+    patients = None
+    treatments = None
 
     if request.method == 'POST':
-        treatment.delete()
-        messages.success(request, '処置が正常に削除されました。')
-        return redirect('treatment_deleted')
-
-    context = {
-        'treatment': treatment
-    }
-    return render(request, '../templates/doctor/D102/delete_treatment.html', context)
-
-
-def treatment_success(request):
-    return render(request, '../templates/doctor/D101/treatment_success.html')
-
-
-def treatment_deleted(request):
-    return render(request, '../templates/doctor/D102/treatment_deleted.html')
-
-
-
-def view_treatment_history(request):
-    if request.method == 'POST':
-        patid = request.POST.get('patid')
-        if patid:
-            if Patient.objects.filter(patid=patid).exists():
-                return redirect('treatment_history', patid=patid)
-            else:
-                messages.error(request, '該当する患者が見つかりません。')
-        else:
+        if 'patid_search' in request.POST:
+            patid = request.POST.get('patid')
+            if patid:
+                if Patient.objects.filter(patid=patid).exists():
+                    patient = get_object_or_404(Patient, patid=patid)
+                    treatments = Treatment.objects.filter(patient=patient)
+                else:
+                    return redirect('error_page', error_message='該当する患者が見つかりません。')
+        elif 'all_patients' in request.POST:
             patients = Patient.objects.all()
-            return render(request, '../templates/doctor/D104/treatment_history.html', {'patients': patients})
+            treatments = Treatment.objects.all()
 
-    patients = Patient.objects.all()
-    return render(request, '../templates/doctor/D104/treatment_history.html', {'patients': patients})
-
-
-
-def treatment_history(request, patid):
-    patient = get_object_or_404(Patient, patid=patid)
-    treatments = Treatment.objects.filter(patient=patient)
-
-    if request.method == 'POST':
-        if 'delete' in request.POST:
-            treatment_id = request.POST.get('treatment_id')
-            treatment = get_object_or_404(Treatment, pk=treatment_id)
-            treatment.delete()
-            messages.success(request, '処置が削除されました。')
-            return redirect('treatment_history', patid=patid)
-
-        if 'add' in request.POST:
-            medicine_id = request.POST.get('medicine_id')
-            quantity = request.POST.get('quantity')
-            medicine = get_object_or_404(Medicine, pk=medicine_id)
-            doctor = get_object_or_404(Employee, empid=request.session.get('userID'))
-            Treatment.objects.create(patient=patient, doctor=doctor, medicine=medicine, quantity=quantity, confirmed=False)
-            messages.success(request, '処置が追加されました。')
-            return redirect('treatment_history', patid=patid)
-
-    medicines = Medicine.objects.all()
     context = {
         'patient': patient,
+        'patients': patients,
         'treatments': treatments,
-        'medicines': medicines
     }
 
     return render(request, '../templates/doctor/D104/treatment_history.html', context)
+
+
+
+
+def error_page(request, error_message):
+    return render(request, '../templates/error//error_page.html', {'error_message': error_message})

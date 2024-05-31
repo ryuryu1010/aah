@@ -29,7 +29,7 @@ urlpatterns = [
     # 患者登録機能
     path('patient_registration/', views.patient_registration, name='patient_registration'),
     # 登録成功画面
-    path('patient_registration_succes/', views.patient_registration_success, name='patient_registration_success'),
+    path('patient_registration_success/', views.patient_registration_success, name='patient_registration_success'),
     # 患者一覧
     path('patients/', views.patient_list, name='patient_list'),
     # 保険証情報編集機能
@@ -38,14 +38,16 @@ urlpatterns = [
     path('search_patients/', views.search_patients, name='search_patients'),
     # 追加
     path('add_treatment/', views.add_treatment, name='add_treatment'),
-    # 消去
-    path('delete_treatment/<int:treatment_id>/', views.delete_treatment, name='delete_treatment'),
     # 処置確定
     path('confirm_treatment/<int:treatment_id>/', views.confirm_treatment, name='confirm_treatment'),
     # 処置確定成功画面
     path('treatment_success/', views.treatment_success, name='treatment_success'),
+    # 処置削除と数量減少
+    path('decrease_treatment_quantity/<int:treatment_id>/', views.decrease_treatment_quantity, name='decrease_treatment_quantity'),
+    # 処置削除成功画面
     path('treatment_deleted/', views.treatment_deleted, name='treatment_deleted'),
     # 処置履歴
-    path('view_treatment_history/', views.view_treatment_history, name='view_treatment_history'),
-    path('treatment_history/<str:patid>/', views.treatment_history, name='treatment_history'),
+    path('treatment_history/', views.treatment_history, name='treatment_history'),
+    # エラーページ
+    path('error_page/', views.error_page, name='error_page'),
 ]

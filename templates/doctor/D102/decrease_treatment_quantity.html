@@ -76,9 +76,9 @@
         <p>処置日: {{ treatment.treatment_date }}</p>
         <form method="post">
             {% csrf_token %}
-            <input type="submit" value="処置削除">
+            <input type="submit" value="数量を減らす">
         </form>
-        <a href="{% url 'd_index' %}">医師画面に戻る</a>
+        <a href="{% url 'treatment_history' %}">処置履歴に戻る</a>
     </div>
 </body>
 </html>
