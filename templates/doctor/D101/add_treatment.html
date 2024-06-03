@@ -64,12 +64,6 @@
                     <option value="{{ patient.patid }}">{{ patient.patid }} - {{ patient.patfname }} {{ patient.patiname }}</option>
                 {% endfor %}
             </select>
-            <label for="doctor_id">医師ID:</label>
-            <select id="doctor_id" name="doctor_id">
-                {% for doctor in doctors %}
-                    <option value="{{ doctor.empid }}">{{ doctor.empid }} - {{ doctor.empfname }} {{ doctor.empiname }}</option>
-                {% endfor %}
-            </select>
             <label for="medicine_id">薬剤ID:</label>
             <select id="medicine_id" name="medicine_id">
                 {% for medicine in medicines %}

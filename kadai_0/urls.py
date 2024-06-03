@@ -43,9 +43,11 @@ urlpatterns = [
     # 処置確定成功画面
     path('treatment_success/', views.treatment_success, name='treatment_success'),
     # 処置削除と数量減少
-    path('decrease_treatment_quantity/<int:treatment_id>/', views.decrease_treatment_quantity, name='decrease_treatment_quantity'),
+    path('decrease_treatment_quantity/', views.decrease_treatment_quantity, name='decrease_treatment_quantity'),
     # 処置削除成功画面
     path('treatment_deleted/', views.treatment_deleted, name='treatment_deleted'),
+    # 処置数量減少
+    path('decrease_treatment_quantity/<int:treatment_id>/', views.decrease_treatment_quantity, name='decrease_treatment_quantity'),  # 新しいURLパターン
     # 処置履歴
     path('treatment_history/', views.treatment_history, name='treatment_history'),
     # エラーページ

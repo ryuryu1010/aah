@@ -126,7 +126,7 @@
                             <td>{{ treatment.medicine.medicineid }}</td>
                             <td>{{ treatment.medicine.medicinename }}</td>
                             <td>{{ treatment.quantity }}</td>
-                            <td>{{ treatment.treatment_date }}</td>
+                            <td>{{ treatment.treatment_date|date:"Y年m月d日" }}</td> <!-- ここを変更 -->
                         </tr>
                     {% endfor %}
                 </table>
@@ -160,7 +160,7 @@
                             <td>{{ treatment.medicine.medicineid }}</td>
                             <td>{{ treatment.medicine.medicinename }}</td>
                             <td>{{ treatment.quantity }}</td>
-                            <td>{{ treatment.treatment_date }}</td>
+                            <td>{{ treatment.treatment_date|date:"Y年m月d日" }}</td> <!-- ここを変更 -->
                         </tr>
                     {% endfor %}
                 </table>

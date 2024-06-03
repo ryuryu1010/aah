@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine
 from datetime import datetime
+from django.utils import timezone
+from urllib.parse import urlencode
 
 
 def login(request):
@@ -259,7 +261,7 @@ def search_patients(request):
 def add_treatment(request):
     if request.method == 'POST':
         patient_id = request.POST.get('patient_id')
-        doctor_id = request.POST.get('doctor_id')
+        doctor_id = request.session.get('userID')  # セッションから医師IDを取得
         medicine_id = request.POST.get('medicine_id')
         quantity = request.POST.get('quantity')
 
@@ -273,14 +275,13 @@ def add_treatment(request):
         return redirect('confirm_treatment', treatment_id=treatment.treatmentid)
 
     patients = Patient.objects.all()
-    doctors = Employee.objects.filter(emprole=1)
     medicines = Medicine.objects.all()
     context = {
         'patients': patients,
-        'doctors': doctors,
         'medicines': medicines
     }
     return render(request, '../templates/doctor/D101/add_treatment.html', context)
+
 
 
 
@@ -290,39 +291,19 @@ def treatment_success(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
 def decrease_treatment_quantity(request, treatment_id):
-    treatment = get_object_or_404(Treatment, pk=treatment_id)
-
+    treatment = get_object_or_404(Treatment, treatmentid=treatment_id)
     if request.method == 'POST':
-        decrement_value = int(request.POST.get('decrement_value', 1))
-        treatment.quantity -= decrement_value
-        if treatment.quantity < 0:
-            return redirect('error_page', error_message='数量がマイナスになるため処置を減少できません。')
-        elif treatment.quantity == 0:
-            treatment.delete()
-            messages.success(request, '処置が削除されました。')
-            return redirect('treatment_deleted')
+        decrement_value = int(request.POST.get('decrement_value'))
+        if decrement_value > treatment.quantity:
+            # エラーメッセージを表示
+            context = {'treatment': treatment, 'error': '減少する数量が現在の数量を超えています。'}
+            return render(request, 'doctor/D102/decrease_treatment_quantity.html', context)
         else:
+            treatment.quantity -= decrement_value
             treatment.save()
-            messages.success(request, '処置の数量が減少されました。')
-            return redirect('confirm_treatment', treatment_id=treatment_id)
-
-    context = {
-        'treatment': treatment
-    }
-    return render(request, '../templates/doctor/D102/decrease_treatment_quantity.html', context)
-
-
+            return redirect('confirm_treatment', treatment_id=treatment.treatmentid)
+    return render(request, 'doctor/D102/decrease_treatment_quantity.html', {'treatment': treatment})
 
 
 def treatment_deleted(request):
@@ -391,5 +372,6 @@ def treatment_history(request):
 
 
 
-def error_page(request, error_message):
-    return render(request, '../templates/error//error_page.html', {'error_message': error_message})
+def error_page(request):
+    error_message = request.GET.get('error_message', 'エラーが発生しました。')
+    return render(request, '../templates/error/error_page.html', {'error_message': error_message})
