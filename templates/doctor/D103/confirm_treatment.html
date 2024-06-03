@@ -10,7 +10,6 @@
             background-color: #f7f7f7;
             color: #333;
         }
-
         .container {
             width: 50%;
             margin: 50px auto;
@@ -19,26 +18,17 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
         h1 {
             text-align: center;
             color: #007bff;
         }
-
         form {
             display: flex;
             flex-direction: column;
         }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
         p {
             margin-bottom: 15px;
         }
-
         input[type="submit"] {
             padding: 10px;
             background-color: #007bff;
@@ -47,11 +37,9 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
         input[type="submit"]:hover {
             background-color: #0056b3;
         }
-
         a {
             display: block;
             text-align: center;
@@ -59,7 +47,6 @@
             color: #007bff;
             text-decoration: none;
         }
-
         a:hover {
             color: #0056b3;
         }
@@ -68,12 +55,9 @@
 <body>
     <div class="container">
         <h1>処置確認</h1>
-        <p>処置ID: {{ treatment.treatmentid }}</p>
-        <p>患者ID: {{ treatment.patient.patid }}</p>
-        <p>医師ID: {{ treatment.doctor.empid }}</p>
-        <p>薬剤ID: {{ treatment.medicine.medicineid }}</p>
+        <p>患者名: {{ treatment.patient.patfname }} {{ treatment.patient.patiname }}</p>
+        <p>薬剤: {{ treatment.medicine.medicinename }}</p>
         <p>数量: {{ treatment.quantity }}</p>
-        <p>処置日: {{ treatment.treatment_date }}</p>
         <form method="post">
             {% csrf_token %}
             <input type="submit" value="処置確定">

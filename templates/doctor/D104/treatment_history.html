@@ -109,7 +109,9 @@
                         <th>名</th>
                         <th>処置ID</th>
                         <th>医師ID</th>
+                        <th>医師名</th>
                         <th>薬剤ID</th>
+                        <th>薬剤名</th>
                         <th>数量</th>
                         <th>処置日</th>
                     </tr>
@@ -120,7 +122,9 @@
                             <td>{{ patient.patiname }}</td>
                             <td>{{ treatment.treatmentid }}</td>
                             <td>{{ treatment.doctor.empid }}</td>
+                            <td>{{ treatment.doctor.empfname }} {{ treatment.doctor.empiname }}</td>
                             <td>{{ treatment.medicine.medicineid }}</td>
+                            <td>{{ treatment.medicine.medicinename }}</td>
                             <td>{{ treatment.quantity }}</td>
                             <td>{{ treatment.treatment_date }}</td>
                         </tr>
@@ -139,7 +143,9 @@
                         <th>名</th>
                         <th>処置ID</th>
                         <th>医師ID</th>
+                        <th>医師名</th>
                         <th>薬剤ID</th>
+                        <th>薬剤名</th>
                         <th>数量</th>
                         <th>処置日</th>
                     </tr>
@@ -150,7 +156,9 @@
                             <td>{{ treatment.patient.patiname }}</td>
                             <td>{{ treatment.treatmentid }}</td>
                             <td>{{ treatment.doctor.empid }}</td>
+                            <td>{{ treatment.doctor.empfname }} {{ treatment.doctor.empiname }}</td>
                             <td>{{ treatment.medicine.medicineid }}</td>
+                            <td>{{ treatment.medicine.medicinename }}</td>
                             <td>{{ treatment.quantity }}</td>
                             <td>{{ treatment.treatment_date }}</td>
                         </tr>
