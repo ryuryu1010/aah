@@ -110,9 +110,6 @@
             <a href="{% url 'treatment_history' %}">処置履歴に戻る</a>
             <a href="{% url 'd_index' %}">医師画面に戻る</a>
         </div>
-        {% if error_message %}
-            <p class="error-message">{{ error_message }}</p>
-        {% endif %}
     </div>
     <script>
         function updateQuantity() {

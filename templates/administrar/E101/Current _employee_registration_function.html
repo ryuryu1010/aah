@@ -108,11 +108,6 @@
             </div>
             <button type="submit">登録確認</button>
         </form>
-        <p id="error-message" class="error-message">
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
-        </p>
         <a href="{% url 'a_index' %}">管理者画面に戻る</a>
     </div>
 </body>

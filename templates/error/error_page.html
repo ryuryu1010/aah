@@ -42,7 +42,15 @@
     <div class="container">
         <h1>エラー</h1>
         <p>{{ error_message }}</p>
-        <a href="{% url 'd_index' %}">医師画面に戻る</a>
+        {% if emprole == 0 %}
+            <a href="{% url 'a_index' %}">管理者画面に戻る</a>
+        {% elif emprole == 1 %}
+            <a href="{% url 'd_index' %}">医師画面に戻る</a>
+        {% elif emprole == 2 %}
+            <a href="{% url 'r_index' %}">受付画面に戻る</a>
+        {% else %}
+            <a href="{% url 'login' %}">ログイン画面に戻る</a>
+        {% endif %}
     </div>
 </body>
 </html>

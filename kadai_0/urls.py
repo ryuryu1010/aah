@@ -50,8 +50,7 @@ urlpatterns = [
     path('treatment_decreased_success/', views.treatment_decreased_success, name='treatment_decreased_success'),
     # 処置履歴
     path('treatment_history/', views.treatment_history, name='treatment_history'),
-    path('confirm_decrease_treatment_quantity/',views.confirm_decrease_treatment_quantity,
-         name='confirm_decrease_treatment_quantity'),
+    path('confirm_decrease_treatment_quantity/', views.confirm_decrease_treatment_quantity, name='confirm_decrease_treatment_quantity'),
     # エラーページ
     path('error_page/', views.error_page, name='error_page'),
 ]
