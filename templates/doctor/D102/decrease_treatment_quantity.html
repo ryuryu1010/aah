@@ -7,32 +7,39 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
+            background-color: #e9f4fb;
             color: #333;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .container {
-            width: 50%;
-            margin: 50px auto;
+            width: 40%;
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
         h1 {
-            text-align: center;
             color: #007bff;
+            margin-bottom: 20px;
         }
 
         form {
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
         label {
             font-weight: bold;
             margin-bottom: 5px;
+            align-self: flex-start;
         }
 
         select, input[type="number"], input[type="submit"] {
@@ -40,37 +47,79 @@
             margin-bottom: 15px;
             border: 1px solid #007bff;
             border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         input[type="submit"] {
             background-color: #007bff;
             color: #fff;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
         input[type="submit"]:hover {
             background-color: #0056b3;
+        }
+
+        .links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+        }
+
+        .current-quantity {
+            margin-bottom: 15px;
+            color: #555;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>処置数量減少</h1>
-        <form method="post">
+        <form method="post" id="treatmentForm">
             {% csrf_token %}
             <label for="treatment_id">処置ID:</label>
-            <select id="treatment_id" name="treatment_id" required>
+            <select id="treatment_id" name="treatment_id" required onchange="updateQuantity()">
+                <option value="">選択してください</option>
                 {% for treatment in treatments %}
-                    <option value="{{ treatment.treatmentid }}">{{ treatment.treatmentid }} - {{ treatment.patient.patfname }} {{ treatment.patient.patiname }} - {{ treatment.medicine.medicinename }}</option>
+                    <option value="{{ treatment.treatmentid }}" data-quantity="{{ treatment.quantity }}">{{ treatment.treatmentid }} - {{ treatment.patient.patfname }} {{ treatment.patient.patiname }} - {{ treatment.medicine.medicinename }}</option>
                 {% endfor %}
             </select>
+            <p id="currentQuantity" class="current-quantity">現在の数量: </p>
             <label for="decrement_value">減少する数量:</label>
             <input type="number" id="decrement_value" name="decrement_value" min="1" required>
             <input type="submit" value="数量を減少">
         </form>
+        <div class="links">
+            <a href="{% url 'treatment_history' %}">処置履歴に戻る</a>
+            <a href="{% url 'd_index' %}">医師画面に戻る</a>
+        </div>
         {% if error_message %}
-            <p style="color: red;">{{ error_message }}</p>
+            <p class="error-message">{{ error_message }}</p>
         {% endif %}
     </div>
+    <script>
+        function updateQuantity() {
+            var select = document.getElementById('treatment_id');
+            var quantity = select.options[select.selectedIndex].getAttribute('data-quantity');
+            document.getElementById('currentQuantity').textContent = '現在の数量: ' + quantity;
+        }
+    </script>
 </body>
 </html>

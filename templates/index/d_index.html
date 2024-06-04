@@ -7,48 +7,58 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
             margin: 0;
             padding: 0;
-            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             color: #333;
         }
-        h1 {
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+        }
+        h1 {
             color: #007bff;
-            margin-top: 20px;
         }
         ul {
             list-style-type: none;
             padding: 0;
-            margin: 50px auto;
-            text-align: center;
         }
-        li {
-            margin-bottom: 20px;
+        ul li {
+            margin: 10px 0;
         }
         a {
-            display: block;
-            padding: 20px;
-            background-color: #007bff;
-            color: #fff;
             text-decoration: none;
-            border-radius: 10px;
-            font-size: 18px;
-            transition: background-color 0.3s ease;
+            color: #007bff;
+            font-weight: bold;
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
         }
         a:hover {
-            background-color: #0056b3;
+            background-color: #007bff;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
-    <h1>医師用ホーム画面</h1>
-    <ul>
-        <li><a href="{% url 'search_patients' %}">全患者検索</a></li>
-        <li><a href="{% url 'add_treatment' %}">薬物追加投与</a></li>
-        <li><a href="{% url 'decrement_treatment_quantity' %}">薬物投与削除</a></li>
-        <li><a href="{% url 'treatment_history' %}">処置履歴</a></li>
-        <li><a href="{% url 'logout' %}">ログアウト</a></li>
-    </ul>
+    <div class="container">
+        <h1>医師用ホーム画面</h1>
+        <ul>
+            <li><a href="{% url 'search_patients' %}">全患者検索</a></li>
+            <li><a href="{% url 'add_treatment' %}">薬物追加投与</a></li>
+            <li><a href="{% url 'decrease_treatment_quantity' %}">薬物投与削除</a></li>
+            <li><a href="{% url 'treatment_history' %}">処置履歴</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
+        </ul>
+    </div>
 </body>
 </html>

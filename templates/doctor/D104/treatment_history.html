@@ -7,8 +7,14 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
+            background-color: #e9f4fb;
             color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
         .container {
@@ -53,7 +59,7 @@
         }
 
         a, input[type="submit"] {
-            display: block;
+            display: inline-block;
             text-align: center;
             margin-top: 20px;
             padding: 10px;
@@ -62,6 +68,7 @@
             text-decoration: none;
             border-radius: 4px;
             border: none;
+            transition: background-color 0.3s ease;
         }
 
         a:hover, input[type="submit"]:hover {
@@ -69,6 +76,7 @@
         }
 
         form {
+            text-align: center;
             margin-bottom: 20px;
         }
 
@@ -97,6 +105,7 @@
             <input type="text" id="patid" name="patid">
             <input type="submit" name="patid_search" value="検索">
             <input type="submit" name="all_patients" value="全件表示">
+            <a href="{% url 'd_index' %}">医師画面に戻る</a>
         </form>
 
         {% if patient %}
@@ -126,12 +135,13 @@
                             <td>{{ treatment.medicine.medicineid }}</td>
                             <td>{{ treatment.medicine.medicinename }}</td>
                             <td>{{ treatment.quantity }}</td>
-                            <td>{{ treatment.treatment_date|date:"Y年m月d日" }}</td> <!-- ここを変更 -->
+                            <td>{{ treatment.treatment_date|date:"Y年m月d日" }}</td>
                         </tr>
                     {% endfor %}
                 </table>
             {% else %}
                 <p class="no-data">該当する処置履歴が見つかりません。</p>
+                <a href="{% url 'd_index' %}">医師画面に戻る</a>
             {% endif %}
         {% elif patients %}
             <h2>全患者の処置履歴</h2>
@@ -160,12 +170,13 @@
                             <td>{{ treatment.medicine.medicineid }}</td>
                             <td>{{ treatment.medicine.medicinename }}</td>
                             <td>{{ treatment.quantity }}</td>
-                            <td>{{ treatment.treatment_date|date:"Y年m月d日" }}</td> <!-- ここを変更 -->
+                            <td>{{ treatment.treatment_date|date:"Y年m月d日" }}</td>
                         </tr>
                     {% endfor %}
                 </table>
             {% else %}
                 <p class="no-data">処置履歴が見つかりません。</p>
+                <a href="{% url 'd_index' %}">医師画面に戻る</a>
             {% endif %}
         {% endif %}
     </div>

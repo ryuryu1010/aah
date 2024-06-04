@@ -7,32 +7,40 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
+            background-color: #e9f4fb;
             color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .container {
-            width: 50%;
-            margin: 50px auto;
+            width: 40%;
             padding: 20px;
-            background-color: #fff;
+            background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
         h1 {
-            text-align: center;
             color: #007bff;
+            margin-bottom: 20px;
         }
 
         form {
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
         label {
             font-weight: bold;
             margin-bottom: 5px;
+            align-self: flex-start;
         }
 
         select, input[type="number"], input[type="submit"] {
@@ -40,16 +48,36 @@
             margin-bottom: 15px;
             border: 1px solid #007bff;
             border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         input[type="submit"] {
             background-color: #007bff;
             color: #fff;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
         input[type="submit"]:hover {
             background-color: #0056b3;
+        }
+
+        .links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: #0056b3;
         }
     </style>
 </head>
@@ -74,6 +102,10 @@
             <input type="number" id="quantity" name="quantity" required>
             <input type="submit" value="確認画面へ">
         </form>
+        <div class="links">
+            <a href="{% url 'treatment_history' %}">処置履歴に戻る</a>
+            <a href="{% url 'd_index' %}">医師画面に戻る</a>
+        </div>
     </div>
 </body>
 </html>

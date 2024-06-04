@@ -291,30 +291,95 @@ def treatment_success(request):
 
 
 
-def decrease_treatment_quantity(request, treatment_id):
-    treatment = get_object_or_404(Treatment, treatmentid=treatment_id)
+
+
+
+
+
+
+
+# 処置数量減少を処理するビュー関数
+def decrease_treatment_quantity(request):
     if request.method == 'POST':
-        decrement_value = int(request.POST.get('decrement_value'))
+        # フォームから処置IDと減少する数量を取得
+        treatment_id = request.POST['treatment_id']
+        decrement_value = int(request.POST['decrement_value'])
+
+        # 処置IDに対応するTreatmentオブジェクトを取得、存在しない場合は404エラー
+        treatment = get_object_or_404(Treatment, pk=treatment_id)
+
+        # 減少する数量が現在の数量を超えている場合、エラーメッセージを表示
         if decrement_value > treatment.quantity:
-            # エラーメッセージを表示
-            context = {'treatment': treatment, 'error': '減少する数量が現在の数量を超えています。'}
-            return render(request, 'doctor/D102/decrease_treatment_quantity.html', context)
-        else:
-            treatment.quantity -= decrement_value
-            treatment.save()
-            return redirect('confirm_treatment', treatment_id=treatment.treatmentid)
-    return render(request, 'doctor/D102/decrease_treatment_quantity.html', {'treatment': treatment})
+            messages.error(request, '減少量が現在の数量を超えています。')
+            return render(request, 'doctor/D102/decrease_treatment_quantity.html', {
+                'treatments': Treatment.objects.all(),
+                'error_message': '減少量が現在の数量を超えています。'
+            })
+
+        # セッションに処置IDと減少する数量を保存
+        request.session['treatment_id'] = treatment_id
+        request.session['decrement_value'] = decrement_value
+
+        # 確認画面にリダイレクト
+        return redirect('confirm_decrease_treatment_quantity')
+
+    # GETリクエストの場合、処置数量減少フォームを表示
+    return render(request, 'doctor/D102/decrease_treatment_quantity.html', {
+        'treatments': Treatment.objects.all()
+    })
+
+# 処置数量減少の確認と確定を処理するビュー関数
+def confirm_decrease_treatment_quantity(request):
+    # セッションから処置IDと減少する数量を取得
+    treatment_id = request.session.get('treatment_id')
+    decrement_value = request.session.get('decrement_value')
+
+    # セッションに必要な情報がない場合、エラーメッセージを表示して処置数量減少ページにリダイレクト
+    if not treatment_id or not decrement_value:
+        messages.error(request, '無効なリクエストです。')
+        return redirect('decrease_treatment_quantity')
+
+    # 処置IDに対応するTreatmentオブジェクトを取得、存在しない場合は404エラー
+    treatment = get_object_or_404(Treatment, pk=treatment_id)
+
+    if request.method == 'POST':
+        # 減少する数量が現在の数量を超えている場合、エラーメッセージを表示
+        if decrement_value > treatment.quantity:
+            messages.error(request, '減少量が現在の数量を超えています。')
+            return render(request, 'doctor/D103/confirm_treatment.html', {
+                'treatment': treatment,
+                'error_message': '減少量が現在の数量を超えています。'
+            })
+
+        # 処置の数量を減少させ、確定フラグを設定して保存
+        treatment.quantity -= decrement_value
+        treatment.confirmed = True
+        treatment.save()
+
+        # 処置の数量が0になった場合、処置を削除して削除成功ページにリダイレクト
+        if treatment.quantity == 0:
+            treatment.delete()
+            return redirect('treatment_deleted_success')
+
+        # 処置数量減少が成功したことをメッセージとして表示し、成功ページにリダイレクト
+        messages.success(request, '処置数量が正常に減少されました。')
+        return redirect('treatment_decreased_success')
+
+    # GETリクエストの場合、確認画面を表示
+    context = {
+        'treatment': treatment,
+        'decrement_value': decrement_value
+    }
+    return render(request, 'doctor/D103/confirm_treatment.html', context)
 
 
-def treatment_deleted(request):
+
+def treatment_decreased_success(request):
+    return render(request, 'doctor/D102/treatment_decreased_success.html')
+
+
+def treatment_deleted_success(request):
     return render(request, '../templates/doctor/D102/treatment_deleted.html')
-
-
-
-
-
-
-
 
 
 
