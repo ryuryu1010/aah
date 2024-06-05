@@ -350,33 +350,7 @@ def treatment_decreased_success(request):
 def treatment_deleted_success(request):
     return render(request, '../templates/doctor/D102/treatment_deleted.html')
 
-# 処置の確認を行うビュー関数
-def treatment_history(request):
-    patient = None
-    patients = None
-    treatments = None
 
-    if request.method == 'POST':
-        if 'patid_search' in request.POST:
-            patid = request.POST.get('patid')  # POSTデータから患者IDを取得
-            if patid:
-                if Patient.objects.filter(patid=patid).exists():
-                    patient = get_object_or_404(Patient, patid=patid)  # 患者情報を取得
-                    treatments = Treatment.objects.filter(patient=patient)  # 患者に関連する処置情報を取得
-                else:
-                    query_string = urlencode({'error_message': '該当する患者が見つかりません。'})
-                    return HttpResponseRedirect(f"/error_page/?{query_string}")  # 該当する患者がいない場合、エラーページにリダイレクト
-        elif 'all_patients' in request.POST:
-            patients = Patient.objects.all()  # 全患者情報を取得
-            treatments = Treatment.objects.all()  # 全処置情報を取得
-
-    context = {
-        'patient': patient,
-        'patients': patients,
-        'treatments': treatments,
-    }
-
-    return render(request, '../templates/doctor/D104/treatment_history.html', context)
 
 def confirm_treatment(request, treatment_id):
     treatment = get_object_or_404(Treatment, pk=treatment_id)  # 処置IDに対応する処置情報を取得
@@ -392,7 +366,8 @@ def confirm_treatment(request, treatment_id):
     }
     return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
 
-# 処置履歴を表示するビュー関数
+
+# 処置の確認を行うビュー関数
 def treatment_history(request):
     patient = None
     patients = None
