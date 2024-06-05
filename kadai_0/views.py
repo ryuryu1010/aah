@@ -1,3 +1,4 @@
+import re  # 正規表現モジュールのインポート
 from datetime import timezone
 
 from django.http import HttpResponseRedirect
@@ -7,7 +8,6 @@ from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine
 from datetime import datetime
 from django.utils import timezone
 from urllib.parse import urlencode
-
 # ログイン処理を行うビュー関数
 def login(request):
     if request.method == "GET":
@@ -86,6 +86,7 @@ def employee_list(request):
     employees = Employee.objects.all()  # 全従業員情報を取得
     return render(request, '../templates/administrar/E101/employee_list.html', {'employees': employees})
 
+
 # 仕入先追加を処理するビュー関数
 def Add_vendor(request):
     if request.method == 'POST':
@@ -96,8 +97,30 @@ def Add_vendor(request):
         shihonkin = request.POST['shihonkin']  # POSTデータから資本金を取得
         nouki = request.POST['nouki']  # POSTデータから納期を取得
 
+        # フィールドの長さのバリデーション
+        if len(shiireid) > 8:
+            return redirect('/error_page/?error_message=仕入先IDが長すぎます。')
+        if len(shiiremei) > 64:
+            return redirect('/error_page/?error_message=仕入先名が長すぎます。')
+        if len(shiireaddress) > 64:
+            return redirect('/error_page/?error_message=仕入先住所が長すぎます。')
+        if len(shiiretel) > 13:
+            return redirect('/error_page/?error_message=仕入先電話番号が長すぎます。')
+
+        # 電話番号のバリデーション
+        if not re.match(r'^[0-9()\-]+$', shiiretel):
+            return redirect('/error_page/?error_message=電話番号には数字、括弧、ハイフン以外の文字は使用できません。')
+
+        # 資本金のバリデーション
+        if not re.match(r'^[0-9,¥]+$', shihonkin):
+            return redirect('/error_page/?error_message=資本金には数値、カンマ、円記号以外の文字は使用できません。')
+
+        # 納期のバリデーション
+        if not re.match(r'^[0-9,]+$', nouki):
+            return redirect('/error_page/?error_message=納期には数値、カンマ、以外の文字は使用できません。')
+
         if Shiiregyosha.objects.filter(shiireid=shiireid).exists():
-            return render(request, '../templates/error/error_page.html', {'error_message': 'Supplier ID already exists.'})  # 仕入先IDが既に存在する場合、エラーメッセージを表示
+            return redirect('/error_page/?error_message=Supplier ID already exists.')  # 仕入先IDが既に存在する場合、エラーメッセージを表示
 
         supplier = Shiiregyosha(
             shiireid=shiireid,
@@ -113,10 +136,12 @@ def Add_vendor(request):
 
     return render(request, '../templates/administrar/S101/Ability_to_add_records.html')
 
+
 # 仕入先テーブルを表示するビュー関数
 def supplier_TBL(request):
     suppliers = Shiiregyosha.objects.all()  # 全仕入先情報を取得
     return render(request, '../templates/administrar/S102/Supplier _TBL.html', {'suppliers': suppliers})
+
 
 # 住所検索を処理するビュー関数
 def address_search(request):
@@ -398,5 +423,5 @@ def treatment_history(request):
 # エラーページを表示するビュー関数
 def error_page(request):
     error_message = request.GET.get('error_message', 'エラーが発生しました。')  # GETデータからエラーメッセージを取得
-    emprole = request.session.get('emp_role')  # セッションから従業員の役割を取得
+    emprole = request.session.get('emp_role', None)  # セッションから従業員の役割を取得
     return render(request, '../templates/error/error_page.html', {'error_message': error_message, 'emprole': emprole})
