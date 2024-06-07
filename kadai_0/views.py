@@ -514,3 +514,6 @@ def error_page(request):
     error_message = request.GET.get('error_message', 'エラーが発生しました。')  # GETデータからエラーメッセージを取得
     emprole = request.session.get('emp_role', None)  # セッションから従業員の役割を取得
     return render(request, '../templates/error/error_page.html', {'error_message': error_message, 'emprole': emprole})
+
+
+
