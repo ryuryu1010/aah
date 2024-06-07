@@ -111,7 +111,6 @@ def employee_list(request):
 
     return render(request, '../templates/administrar/E101/employee_list.html', {'employees': employees})
 
-
 # 仕入先追加を処理するビュー関数
 def Add_vendor(request):
     if request.method == 'POST':
@@ -129,8 +128,10 @@ def Add_vendor(request):
             return redirect('/error_page/?error_message=仕入先名が長すぎます。')
         if len(shiireaddress) > 64:
             return redirect('/error_page/?error_message=仕入先住所が長すぎます。')
-        if len(shiiretel) > 13:
+        if len(shiiretel) > 15:
             return redirect('/error_page/?error_message=仕入先電話番号が長すぎます。')
+        if len(shiiretel) < 10:
+            return redirect('/error_page/?error_message=仕入先電話番号は最低11文字である必要があります。')
 
         # 電話番号のバリデーション
         if not re.match(r'^[0-9()\-]+$', shiiretel):
@@ -387,7 +388,6 @@ def add_treatment(request):
     }
     return render(request, '../templates/doctor/D101/add_treatment.html', context)
 
-
 # 処置確定を行うビュー関数
 def confirm_treatment(request, treatment_id):
     treatment = get_object_or_404(Treatment, pk=treatment_id)  # 処置IDに対応する処置情報を取得
@@ -432,7 +432,7 @@ def decrease_treatment_quantity(request):
 
         return redirect('confirm_decrease_treatment_quantity')  # 確認画面にリダイレクト
 
-    return render(request, 'doctor/D102/decrease_treatment_quantity.html', {
+    return render(request, '../templates/doctor/D102/decrease_treatment_quantity.html', {
         'treatments': Treatment.objects.all()
     })
 
@@ -467,7 +467,7 @@ def confirm_decrease_treatment_quantity(request):
         'treatment': treatment,
         'decrement_value': decrement_value
     }
-    return render(request, 'doctor/D103/confirm_treatment.html', context)
+    return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
 
 
 # 処置数量減少成功ページを表示するビュー関数
