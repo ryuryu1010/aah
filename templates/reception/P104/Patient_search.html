@@ -107,11 +107,24 @@
     <h1>患者検索</h1>
     <div class="container">
         {% if emprole == 2 %}
-        <form action="{% url 'search_patients' %}" method="get">
+        <form action="{% url 'search_patients' %}" method="post">
+            {% csrf_token %}
             <label for="expiration_date">有効期限切れの患者を検索:</label><br>
             <input type="date" id="expiration_date" name="expiration_date"><br>
             <input type="submit" value="検索">
         </form>
+        {% elif emprole == 1 %}
+        <form action="{% url 'search_patients' %}" method="post">
+            {% csrf_token %}
+            <label for="patfname">患者の姓で検索:</label><br>
+            <input type="text" id="patfname" name="patfname"><br>
+            <label for="patiname">患者の名で検索:</label><br>
+            <input type="text" id="patiname" name="patiname"><br>
+            <input type="submit" value="検索">
+        </form>
+        {% endif %}
+        {% if error_message %}
+        <div class="message">{{ error_message }}</div>
         {% endif %}
         {% if patients %}
         <table>
@@ -144,14 +157,12 @@
             </tr>
             {% endfor %}
         </table>
-        {% else %}
-        <div class="message">該当する患者が見つかりません。</div>
         {% endif %}
     </div>
-     {% if emprole == 2 %}
-            <a href="{% url 'r_index' %}">受付画面に戻る</a>
-        {% elif emprole == 1 %}
-            <a href="{% url 'd_index' %}">医師画面に戻る</a>
-        {% endif %}
+    {% if emprole == 2 %}
+        <a href="{% url 'r_index' %}">受付画面に戻る</a>
+    {% elif emprole == 1 %}
+        <a href="{% url 'd_index' %}">医師画面に戻る</a>
+    {% endif %}
 </body>
 </html>

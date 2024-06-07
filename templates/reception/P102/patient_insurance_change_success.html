@@ -3,45 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>保険証変更成功</title>
+    <title>保険証情報変更成功</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: #f7f7f7;
-            text-align: center;
-            padding-top: 50px;
             color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
         h1 {
-            color: #5cb85c;
+            color: #007bff;
         }
-
         p {
-            font-size: 18px;
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
         }
-
         a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
             display: inline-block;
             margin-top: 20px;
             padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
         }
-
         a:hover {
-            background-color: #0056b3;
+            background-color: #007bff;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
-    <h1>保険証情報の変更が成功しました</h1>
-    <p>保険証情報が正常に変更されました。</p>
-    <a href="{% url 'change_patient_insurance' %}">保険証情報変更に戻る</a>
-    <a href="{% url 'r_index' %}">受付ホーム画面に戻る</a>
+    <div class="container">
+        <h1>保険証情報変更成功</h1>
+        <a href="{% url 'patient_list' %}">患者リストに戻る</a>
+        <a href="{% url 'r_index' %}">受付ホーム画面に戻る</a>
+    </div>
 </body>
 </html>

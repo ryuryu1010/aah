@@ -89,7 +89,7 @@
             <label for="patient_id">患者ID:</label>
             <select id="patient_id" name="patient_id">
                 {% for patient in patients %}
-                    <option value="{{ patient.patid }}">{{ patient.patid }} - {{ patient.patfname }} {{ patient.patiname }}</option>
+                    <option value="{{ patient.patid }}" {% if selected_patient_id == patient.patid %}selected{% endif %}>{{ patient.patid }} - {{ patient.patfname }} {{ patient.patiname }}</option>
                 {% endfor %}
             </select>
             <label for="medicine_id">薬剤ID:</label>

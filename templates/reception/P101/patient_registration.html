@@ -96,13 +96,7 @@
 </head>
 <body>
     <h1>患者登録</h1>
-    <div class="messages">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="messages {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    </div>
+   
     <form method="post" action="{% url 'patient_registration' %}">
         {% csrf_token %}
         <label for="patid">患者ID:</label>
