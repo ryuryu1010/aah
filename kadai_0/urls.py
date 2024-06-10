@@ -35,34 +35,23 @@ urlpatterns = [
     # 保険証情報編集機能
     path('edit_patient_insurance/<str:patid>/', views.edit_patient_insurance, name='edit_patient_insurance'),
     # 保険証情報編集成功
-    path('insurance_change_success/,', views.insurance_change_success, name='insurance_change_success'),
+    path('insurance_change_success/', views.insurance_change_success, name='insurance_change_success'),
     # 患者検索（保険証切れ＆全件）機能
     path('search_patients/', views.search_patients, name='search_patients'),
     # 処置追加
-    path('add_treatment/', views.add_treatment, name='add_treatment'),
-    # 処置確定
-    path('confirm_treatment/<int:treatment_id>/', views.confirm_treatment, name='confirm_treatment'),
+    path('add_treatments/', views.add_treatments, name='add_treatments'),
+    # 処置確認
+    path('confirm_treatments/', views.confirm_treatments, name='confirm_treatments'),
     # 処置確定成功画面
     path('treatment_success/', views.treatment_success, name='treatment_success'),
     # 処置履歴
     path('treatment_history/', views.treatment_history, name='treatment_history'),
+    # 処置数量減少
+    path('reduce_multiple_treatment_quantities/', views.reduce_multiple_treatment_quantities, name='reduce_multiple_treatment_quantities'),
+    # 処置数量減少確認
+    path('confirm_reduction/', views.confirm_reduction, name='confirm_reduction'),
+    # 処置数量減少成功画面
+    path('treatment_quantity_reduction_success/', views.treatment_quantity_reduction_success, name='treatment_quantity_reduction_success'),
     # エラーページ
     path('error_page/', views.error_page, name='error_page'),
-
-
-
-
-
-
-
-    # 処置数量減少のパス
-    path('reduce_multiple_treatment_quantities/', views.reduce_multiple_treatment_quantities, name='reduce_multiple_treatment_quantities'),
-    # 処置減少確認のパス
-    path('confirm_reduction/', views.confirm_reduction, name='confirm_reduction'),
-    # 処置数量減少成功ページのパス
-    path('treatment_quantity_reduction_success/', views.treatment_quantity_reduction_success, name='treatment_quantity_reduction_success'),
 ]
-
-
-
-

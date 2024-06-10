@@ -288,6 +288,7 @@ def edit_patient_insurance(request, patid):
     patient = get_object_or_404(Patient, patid=patid)  # 患者IDに対応する患者情報を取得
 
     if request.method == 'POST':
+        hokenmei = request.POST['hokenmei']  # POSTデータから保険証記号番号を取得
         expiration_date_str = request.POST['expiration_date']  # POSTデータから保険の有効期限を取得
         expiration_date = parse_date(expiration_date_str)  # 有効期限を日付オブジェクトに変換
 
@@ -298,10 +299,13 @@ def edit_patient_insurance(request, patid):
 
             patient.hokenexp = expiration_date  # 保険の有効期限を更新
 
-        patient.save()
+        patient.hokenmei = hokenmei  # 保険証記号番号を更新
+        patient.save()  # 患者情報を保存
+
         return redirect('insurance_change_success')  # 成功ページにリダイレクト
 
     return render(request, 'reception/P102/edit_patient_insurance.html', {'patient': patient})
+
 
 
 # 保険変更成功ページを表示するビュー関数
@@ -359,56 +363,6 @@ def search_patients(request):
     return render(request, 'reception/P104/Patient_search.html', context)
 
 
-# 処置を追加するビュー関数
-def add_treatment(request):
-    if request.method == 'POST':
-        patient_id = request.POST.get('patient_id')  # POSTデータから患者IDを取得
-        doctor_id = request.session.get('userID')  # セッションから医師IDを取得
-        medicine_id = request.POST.get('medicine_id')  # POSTデータから薬剤IDを取得
-        quantity = request.POST.get('quantity')  # POSTデータから数量を取得
-
-        if int(quantity) <= 0:
-            return render(request, '../templates/error/error_page.html',
-                          {'error_message': '数量は正の整数でなければなりません。'})
-
-        patient = get_object_or_404(Patient, pk=patient_id)  # 患者情報を取得
-        doctor = get_object_or_404(Employee, pk=doctor_id)  # 医師情報を取得
-        medicine = get_object_or_404(Medicine, pk=medicine_id)  # 薬剤情報を取得
-
-        treatment = Treatment(patient=patient, doctor=doctor, medicine=medicine, quantity=quantity)
-        treatment.save()  # 処置情報を保存
-
-        return redirect('confirm_treatment', treatment_id=treatment.treatmentid)  # 確認画面にリダイレクト
-
-    patients = Patient.objects.all()  # 全患者情報を取得
-    medicines = Medicine.objects.all()  # 全薬剤情報を取得
-    context = {
-        'patients': patients,
-        'medicines': medicines
-    }
-    return render(request, '../templates/doctor/D101/add_treatment.html', context)
-
-# 処置確定を行うビュー関数
-def confirm_treatment(request, treatment_id):
-    treatment = get_object_or_404(Treatment, pk=treatment_id)  # 処置IDに対応する処置情報を取得
-
-    if request.method == 'POST':
-        # 処置を確定するためのロジック
-        treatment.confirmed = True  # 確定フラグを設定
-        treatment.save()  # 処置情報を保存
-
-        messages.success(request, '処置が正常に確定されました。')  # 成功メッセージを表示
-        return redirect('treatment_success')  # 処置成功ページにリダイレクト
-
-    context = {
-        'treatment': treatment
-    }
-    return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
-
-
-# 処置追加成功ページを表示するビュー関数
-def treatment_success(request):
-    return render(request, '../templates/doctor/D103/treatment_success.html')
 
 
 # 処置の確認を行うビュー関数
@@ -505,7 +459,11 @@ def confirm_reduction(request):
             treatments = Treatment.objects.filter(treatmentid__in=treatment_ids)  # 処置IDのリストで処置情報を取得
             for treatment in treatments:
                 treatment.quantity -= quantity_reduction  # 処置の数量を減少
-                treatment.save()  # 処置情報を保存
+
+                if treatment.quantity <= 0:
+                    treatment.delete()  # 処置の数量が0以下になった場合に削除
+                else:
+                    treatment.save()  # 処置情報を保存
 
             messages.success(request, '処置数量が正常に減少されました。')  # 成功メッセージを表示
             return redirect('treatment_quantity_reduction_success')  # 減少成功ページにリダイレクト
@@ -521,8 +479,77 @@ def treatment_quantity_reduction_success(request):
     return render(request, '../templates/doctor/D103/treatment_quantity_reduction_success.html')  # 処置数量減少成功ページを表示
 
 
+# 処置を追加するビュー関数
+def add_treatments(request):
+    patients = Patient.objects.all()  # 全患者情報を取得
+    medicines = Medicine.objects.all()  # 全薬剤情報を取得
+
+    if request.method == 'POST':
+        treatment_data = []
+        for key in request.POST.keys():
+            if key.startswith('patient_id_'):
+                index = key.split('_')[-1]
+                patient_id = request.POST.get(f'patient_id_{index}')
+                medicine_id = request.POST.get(f'medicine_id_{index}')
+                quantity = request.POST.get(f'quantity_{index}')
+                if patient_id and medicine_id and quantity:
+                    if int(quantity) <= 0:
+                        messages.error(request, '数量は正の整数でなければなりません。')
+                        return redirect('add_treatments')
+                    treatment_data.append({
+                        'patient_id': patient_id,
+                        'medicine_id': medicine_id,
+                        'quantity': quantity,
+                    })
+
+        # 処置データをセッションに保存して確認画面に渡す
+        request.session['treatment_data'] = treatment_data
+        return redirect('confirm_treatments')  # 確認画面にリダイレクト
+
+    context = {
+        'patients': patients,
+        'medicines': medicines,
+    }
+    return render(request, '../templates/doctor/D101/add_treatment.html', context)
 
 
+# 処置確定を行うビュー関数
+def confirm_treatments(request):
+    treatment_data = request.session.get('treatment_data', [])
+    doctor_id = request.session.get('userID')  # セッションから医師IDを取得
+
+    if request.method == 'POST':
+        for data in treatment_data:
+            patient = get_object_or_404(Patient, pk=data['patient_id'])
+            doctor = get_object_or_404(Employee, pk=doctor_id)
+            medicine = get_object_or_404(Medicine, pk=data['medicine_id'])
+            quantity = int(data['quantity'])
+            if quantity <= 0:
+                messages.error(request, '数量は正の整数でなければなりません。')
+                return redirect('add_treatments')
+
+            treatment = Treatment(patient=patient, doctor=doctor, medicine=medicine, quantity=quantity)
+            treatment.save()  # 処置情報を保存
+
+        messages.success(request, '処置が正常に追加されました。')  # 成功メッセージを表示
+        return redirect('treatment_success')  # 処置成功ページにリダイレクト
+
+    treatments = []
+    for data in treatment_data:
+        patient = get_object_or_404(Patient, pk=data['patient_id'])
+        medicine = get_object_or_404(Medicine, pk=data['medicine_id'])
+        treatments.append({
+            'patient': patient,
+            'medicine': medicine,
+            'quantity': data['quantity']
+        })
+
+    context = {
+        'treatment_data': treatments,
+    }
+    return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
 
 
-
+# 処置追加成功ページを表示するビュー関数
+def treatment_success(request):
+    return render(request, '../templates/doctor/D103/treatment_success.html')

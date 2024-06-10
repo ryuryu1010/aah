@@ -7,8 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #e9f4fb;
-            color: #333;
+            background-color: #f7f7f7;
             margin: 0;
             padding: 0;
             display: flex;
@@ -18,9 +17,8 @@
         }
 
         .container {
-            width: 40%;
+            background-color: #ffffff;
             padding: 20px;
-            background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -31,60 +29,77 @@
             margin-bottom: 20px;
         }
 
-        p {
-            margin-bottom: 15px;
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
         }
 
-        input[type="submit"] {
-            padding: 10px;
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            padding: 10px 20px;
             background-color: #007bff;
             color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
 
-        input[type="submit"]:hover {
+        button:hover {
             background-color: #0056b3;
         }
 
-        a {
+        .back-button {
             display: inline-block;
             padding: 10px 20px;
             background-color: #007bff;
             color: #fff;
             text-decoration: none;
             border-radius: 4px;
-            margin-top: 10px;
+            margin-top: 20px;
             transition: background-color 0.3s ease;
         }
 
-        a:hover {
+        .back-button:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>処置確認</h1>
-        <p>処置ID: {{ treatment.treatmentid }}</p>
-        <p>患者ID: {{ treatment.patient.patid }}</p>
-        <p>医師ID: {{ treatment.doctor.empid }}</p>
-        <p>薬剤ID: {{ treatment.medicine.medicineid }}</p>
-        <p>現在の数量: {{ treatment.quantity }}</p>
-        <p>減少する数量: {{ decrement_value }}</p>
-        <p>処置日: {{ treatment.treatment_date }}</p>
+        <h1>処置の確認</h1>
         <form method="post">
             {% csrf_token %}
-            <input type="submit" value="処置確定">
+            <table>
+                <thead>
+                    <tr>
+                        <th>患者名</th>
+                        <th>薬剤名</th>
+                        <th>数量</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for treatment in treatment_data %}
+                    <tr>
+                        <td>{{ treatment.patient.patfname }} {{ treatment.patient.patiname }}</td>
+                        <td>{{ treatment.medicine.medicinename }}</td>
+                        <td>{{ treatment.quantity }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">確定する</button>
+            <a href="{% url 'd_index' %}" class="back-button">医師画面に戻る</a>
         </form>
-        <a href="{% url 'd_index' %}">医師画面に戻る</a>
     </div>
 </body>
 </html>

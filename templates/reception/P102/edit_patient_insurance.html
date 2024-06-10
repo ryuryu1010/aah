@@ -33,7 +33,8 @@
             color: #333;
         }
 
-        input[type="date"] {
+        input[type="date"],
+        input[type="text"] {
             width: calc(100% - 20px);
             padding: 10px;
             margin-bottom: 15px;
@@ -79,6 +80,9 @@
     <form action="{% url 'edit_patient_insurance' patient.patid %}" method="post">
         {% csrf_token %}
         
+        <label for="hokenmei">保険証記号番号:</label>
+        <input type="text" id="hokenmei" name="hokenmei" value="{{ patient.hokenmei }}" required>
+
         <label for="expiration_date">新しい有効期限:</label>
         <input type="date" id="expiration_date" name="expiration_date" value="{{ patient.hokenexp }}" required>
 

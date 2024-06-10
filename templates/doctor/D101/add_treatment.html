@@ -7,8 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #e9f4fb;
-            color: #333;
+            background-color: #f7f7f7;
             margin: 0;
             padding: 0;
             display: flex;
@@ -18,9 +17,8 @@
         }
 
         .container {
-            width: 40%;
-            padding: 20px;
             background-color: #ffffff;
+            padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -31,53 +29,52 @@
             margin-bottom: 20px;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            align-self: flex-start;
-        }
-
-        select, input[type="number"], input[type="submit"] {
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #007bff;
-            border-radius: 4px;
+        table {
             width: 100%;
-            box-sizing: border-box;
+            margin-bottom: 20px;
+            border-collapse: collapse;
         }
 
-        input[type="submit"] {
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            padding: 10px 20px;
             background-color: #007bff;
             color: #fff;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
 
-        input[type="submit"]:hover {
+        button:hover {
             background-color: #0056b3;
         }
 
-        .links {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
+        .add-row {
+            margin-bottom: 20px;
         }
 
-        .links a {
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
             text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-            transition: color 0.3s ease;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
         }
 
-        .links a:hover {
-            color: #0056b3;
+        .back-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -86,26 +83,73 @@
         <h1>処置追加</h1>
         <form method="post">
             {% csrf_token %}
-            <label for="patient_id">患者ID:</label>
-            <select id="patient_id" name="patient_id">
-                {% for patient in patients %}
-                    <option value="{{ patient.patid }}" {% if selected_patient_id == patient.patid %}selected{% endif %}>{{ patient.patid }} - {{ patient.patfname }} {{ patient.patiname }}</option>
-                {% endfor %}
-            </select>
-            <label for="medicine_id">薬剤ID:</label>
-            <select id="medicine_id" name="medicine_id">
-                {% for medicine in medicines %}
-                    <option value="{{ medicine.medicineid }}">{{ medicine.medicineid }} - {{ medicine.medicinename }}</option>
-                {% endfor %}
-            </select>
-            <label for="quantity">数量:</label>
-            <input type="number" id="quantity" name="quantity" required>
-            <input type="submit" value="確認画面へ">
+            <div class="add-row">
+                <button type="button" onclick="addRow()">行を追加</button>
+            </div>
+            <table id="treatmentTable">
+                <thead>
+                    <tr>
+                        <th>患者</th>
+                        <th>薬剤</th>
+                        <th>数量</th>
+                        <th>削除</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <select name="patient_id_1" required>
+                                {% for patient in patients %}
+                                <option value="{{ patient.patid }}">{{ patient.patfname }} {{ patient.patiname }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select name="medicine_id_1" required>
+                                {% for medicine in medicines %}
+                                <option value="{{ medicine.medicineid }}">{{ medicine.medicinename }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td><input type="number" name="quantity_1" required></td>
+                        <td><button type="button" onclick="removeRow(this)">削除</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="submit">確認する</button>
+            <a href="{% url 'd_index' %}" class="back-button">医師画面に戻る</a>
         </form>
-        <div class="links">
-            <a href="{% url 'treatment_history' %}">処置履歴に戻る</a>
-            <a href="{% url 'd_index' %}">医師画面に戻る</a>
-        </div>
     </div>
+    <script>
+        let rowCount = 1;
+        function addRow() {
+            rowCount++;
+            const table = document.getElementById('treatmentTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+                <td>
+                    <select name="patient_id_${rowCount}" required>
+                        {% for patient in patients %}
+                        <option value="{{ patient.patid }}">{{ patient.patfname }} {{ patient.patiname }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="medicine_id_${rowCount}" required>
+                        {% for medicine in medicines %}
+                        <option value="{{ medicine.medicineid }}">{{ medicine.medicinename }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td><input type="number" name="quantity_${rowCount}" required></td>
+                <td><button type="button" onclick="removeRow(this)">削除</button></td>
+            `;
+        }
+
+        function removeRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+    </script>
 </body>
 </html>

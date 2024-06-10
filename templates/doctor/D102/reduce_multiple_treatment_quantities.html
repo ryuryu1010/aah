@@ -81,6 +81,21 @@
         .search-container button:hover {
             background-color: #0056b3;
         }
+
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -123,6 +138,7 @@
             <label for="quantity_reduction">減少量:</label>
             <input type="number" id="quantity_reduction" name="quantity_reduction" required>
             <button type="submit">減少する</button>
+            <a href="{% url 'd_index' %}" class="back-button">医師画面に戻る</a>
         </form>
     </div>
 </body>

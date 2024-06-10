@@ -80,7 +80,7 @@
                     <th>ID</th>
                     <th>姓</th>
                     <th>名</th>
-                    <th>ロール</th>
+                    <th>役職名</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,7 +89,17 @@
                     <td>{{ employee.empid }}</td>
                     <td>{{ employee.empfname }}</td>
                     <td>{{ employee.empiname }}</td>
-                    <td>{{ employee.emprole }}</td>
+                    <td>
+                        {% if employee.emprole == 0 %}
+                            管理者
+                        {% elif employee.emprole == 1 %}
+                            医師
+                        {% elif employee.emprole == 2 %}
+                            受付
+                        {% else %}
+                            未定義
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
