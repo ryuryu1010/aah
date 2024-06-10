@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.dateparse import parse_date
-
+from django.db.models import Q  # OR条件を作成するためのモジュールをインポート
 from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine
 from urllib.parse import urlencode
 
@@ -408,76 +408,7 @@ def confirm_treatment(request, treatment_id):
 
 # 処置追加成功ページを表示するビュー関数
 def treatment_success(request):
-    return render(request, '../templates/doctor/D101/treatment_success.html')
-
-
-# 処置数量減少を処理するビュー関数
-def decrease_treatment_quantity(request):
-    if request.method == 'POST':
-        treatment_id = request.POST['treatment_id']  # フォームから処置IDを取得
-        decrement_value = int(request.POST['decrement_value'])  # フォームから減少する数量を取得
-
-        if decrement_value <= 0:
-            return render(request, '../templates/error/error_page.html',
-                          {'error_message': '減少量は正の整数でなければなりません。'})
-
-        treatment = get_object_or_404(Treatment, pk=treatment_id)  # 処置IDに対応する処置情報を取得
-
-        if decrement_value > treatment.quantity:
-            return render(request, '../templates/error/error_page.html',
-                          {'error_message': '減少量が現在の数量を超えています。'})
-
-        request.session['treatment_id'] = treatment_id  # セッションに処置IDを保存
-        request.session['decrement_value'] = decrement_value  # セッションに減少する数量を保存
-
-        return redirect('confirm_decrease_treatment_quantity')  # 確認画面にリダイレクト
-
-    return render(request, '../templates/doctor/D102/decrease_treatment_quantity.html', {
-        'treatments': Treatment.objects.all()
-    })
-
-
-# 処置数量減少の確認と確定を処理するビュー関数
-def confirm_decrease_treatment_quantity(request):
-    treatment_id = request.session.get('treatment_id')  # セッションから処置IDを取得
-    decrement_value = request.session.get('decrement_value')  # セッションから減少する数量を取得
-
-    if not treatment_id or not decrement_value:
-        return render(request, '../templates/error/error_page.html', {'error_message': '無効なリクエストです。'})
-
-    treatment = get_object_or_404(Treatment, pk=treatment_id)  # 処置IDに対応する処置情報を取得
-
-    if request.method == 'POST':
-        if decrement_value > treatment.quantity:
-            return render(request, '../templates/error/error_page.html',
-                          {'error_message': '減少量が現在の数量を超えています。'})
-
-        treatment.quantity -= decrement_value  # 処置の数量を減少させる
-        treatment.confirmed = True  # 確定フラグを設定
-        treatment.save()  # 処置情報を保存
-
-        if treatment.quantity == 0:
-            treatment.delete()  # 処置の数量が0になった場合、処置を削除
-            return redirect('treatment_deleted_success')
-
-        messages.success(request, '処置数量が正常に減少されました。')  # 成功メッセージを表示
-        return redirect('treatment_decreased_success')
-
-    context = {
-        'treatment': treatment,
-        'decrement_value': decrement_value
-    }
-    return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
-
-
-# 処置数量減少成功ページを表示するビュー関数
-def treatment_decreased_success(request):
-    return render(request, 'doctor/D102/treatment_decreased_success.html')
-
-
-# 処置削除成功ページを表示するビュー関数
-def treatment_deleted_success(request):
-    return render(request, '../templates/doctor/D102/treatment_deleted.html')
+    return render(request, '../templates/doctor/D103/treatment_success.html')
 
 
 # 処置の確認を行うビュー関数
@@ -514,6 +445,84 @@ def error_page(request):
     error_message = request.GET.get('error_message', 'エラーが発生しました。')  # GETデータからエラーメッセージを取得
     emprole = request.session.get('emp_role', None)  # セッションから従業員の役割を取得
     return render(request, '../templates/error/error_page.html', {'error_message': error_message, 'emprole': emprole})
+
+
+
+
+
+# 処置数量を複数一度に減らすためのビュー関数
+def reduce_multiple_treatment_quantities(request):
+    treatments = Treatment.objects.all()  # すべての処置情報を取得
+    search_query = request.GET.get('search', '')  # GETデータから検索クエリを取得
+
+    if search_query:
+        # 検索クエリがある場合、患者の姓または名でフィルタリング
+        treatments = treatments.filter(
+            Q(patient__patfname__icontains=search_query) |
+            Q(patient__patiname__icontains=search_query)
+        )
+
+    if request.method == 'POST':
+        treatment_ids = request.POST.getlist('treatment_ids')  # POSTデータから処置IDのリストを取得
+        quantity_reduction = int(request.POST['quantity_reduction'])  # POSTデータから減少量を取得
+        try:
+            if not treatment_ids:
+                raise BOException('処置が選択されていません。')  # カスタム例外をスロー
+
+            if quantity_reduction <= 0:
+                raise BOException('減少量は正の整数でなければなりません。')  # カスタム例外をスロー
+
+            treatments_to_reduce = Treatment.objects.filter(treatmentid__in=treatment_ids)  # 処置IDのリストで処置情報を取得
+            for treatment in treatments_to_reduce:
+                if treatment.quantity - quantity_reduction < 0:
+                    raise BOException(f'処置ID {treatment.treatmentid} の数量が不十分です。')  # カスタム例外をスロー
+
+            # 処置の減少量をセッションに保存して確認画面に渡す
+            request.session['treatment_ids'] = treatment_ids
+            request.session['quantity_reduction'] = quantity_reduction
+            return render(request, '../templates/doctor/D103/confirm_reduction.html', {'treatments': treatments_to_reduce, 'quantity_reduction': quantity_reduction})
+
+        except BOException as e:
+            messages.error(request, str(e))  # カスタム例外のメッセージを表示
+            return render(request, '../templates/error/error_page.html', {'error_message': str(e)})
+
+    context = {
+        'treatments': treatments,  # 処置情報をテンプレートに渡す
+    }
+    return render(request, '../templates/doctor/D102/reduce_multiple_treatment_quantities.html', context)  # 処置数量減少画面を表示
+
+# 処置数量減少を確定するためのビュー関数
+def confirm_reduction(request):
+    if request.method == 'POST':
+        treatment_ids = request.session.get('treatment_ids', [])
+        quantity_reduction = request.session.get('quantity_reduction', 0)
+
+        if not treatment_ids or quantity_reduction <= 0:
+            messages.error(request, '無効な操作です。')  # 無効な操作に対するエラーメッセージを表示
+            return redirect('reduce_multiple_treatment_quantities')  # 処置数量減少画面にリダイレクト
+
+        try:
+            treatments = Treatment.objects.filter(treatmentid__in=treatment_ids)  # 処置IDのリストで処置情報を取得
+            for treatment in treatments:
+                treatment.quantity -= quantity_reduction  # 処置の数量を減少
+                treatment.save()  # 処置情報を保存
+
+            messages.success(request, '処置数量が正常に減少されました。')  # 成功メッセージを表示
+            return redirect('treatment_quantity_reduction_success')  # 減少成功ページにリダイレクト
+
+        except Exception as e:
+            messages.error(request, str(e))  # エラーメッセージを表示
+            return render(request, '../templates/error/error_page.html', {'error_message': str(e)})
+
+    return redirect('reduce_multiple_treatment_quantities')  # GETリクエストの場合、処置数量減少画面にリダイレクト
+
+# 処置数量減少成功ページを表示するビュー関数
+def treatment_quantity_reduction_success(request):
+    return render(request, '../templates/doctor/D103/treatment_quantity_reduction_success.html')  # 処置数量減少成功ページを表示
+
+
+
+
 
 
 

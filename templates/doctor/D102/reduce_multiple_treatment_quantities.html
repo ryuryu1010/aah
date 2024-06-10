@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>処置数量減少</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-container input[type="text"] {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-container button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>処置数量減少</h1>
+        <div class="search-container">
+            <form method="get">
+                <input type="text" name="search" placeholder="名前で検索">
+                <button type="submit">検索</button>
+            </form>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>患者ID</th>
+                        <th>患者名</th>
+                        <th>医師ID</th>
+                        <th>薬剤ID</th>
+                        <th>現在の数量</th>
+                        <th>選択</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for treatment in treatments %}
+                    <tr>
+                        <td>{{ treatment.patient.patid }}</td>
+                        <td>{{ treatment.patient.patfname }} {{ treatment.patient.patiname }}</td>
+                        <td>{{ treatment.doctor.empid }}</td>
+                        <td>{{ treatment.medicine.medicineid }}</td>
+                        <td>{{ treatment.quantity }}</td>
+                        <td>
+                            <input type="checkbox" name="treatment_ids" value="{{ treatment.treatmentid }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <label for="quantity_reduction">減少量:</label>
+            <input type="number" id="quantity_reduction" name="quantity_reduction" required>
+            <button type="submit">減少する</button>
+        </form>
+    </div>
+</body>
+</html>

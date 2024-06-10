@@ -42,18 +42,27 @@ urlpatterns = [
     path('add_treatment/', views.add_treatment, name='add_treatment'),
     # 処置確定
     path('confirm_treatment/<int:treatment_id>/', views.confirm_treatment, name='confirm_treatment'),
-    # 処置数量減少確認
-    path('confirm_decrease_treatment_quantity/', views.confirm_decrease_treatment_quantity, name='confirm_decrease_treatment_quantity'),
     # 処置確定成功画面
     path('treatment_success/', views.treatment_success, name='treatment_success'),
-    # 処置削除と数量減少
-    path('decrease_treatment_quantity/', views.decrease_treatment_quantity, name='decrease_treatment_quantity'),
-    # 処置削除成功画面
-    path('treatment_deleted_success/', views.treatment_deleted_success, name='treatment_deleted_success'),
-    # 処置数量減少成功画面
-    path('treatment_decreased_success/', views.treatment_decreased_success, name='treatment_decreased_success'),
     # 処置履歴
     path('treatment_history/', views.treatment_history, name='treatment_history'),
     # エラーページ
     path('error_page/', views.error_page, name='error_page'),
+
+
+
+
+
+
+
+    # 処置数量減少のパス
+    path('reduce_multiple_treatment_quantities/', views.reduce_multiple_treatment_quantities, name='reduce_multiple_treatment_quantities'),
+    # 処置減少確認のパス
+    path('confirm_reduction/', views.confirm_reduction, name='confirm_reduction'),
+    # 処置数量減少成功ページのパス
+    path('treatment_quantity_reduction_success/', views.treatment_quantity_reduction_success, name='treatment_quantity_reduction_success'),
 ]
+
+
+
+
