@@ -292,6 +292,11 @@ def edit_patient_insurance(request, patid):
         expiration_date_str = request.POST['expiration_date']  # POSTデータから保険の有効期限を取得
         expiration_date = parse_date(expiration_date_str)  # 有効期限を日付オブジェクトに変換
 
+        # 保険証番号が10桁であることを確認
+        if len(hokenmei) != 10:
+            error_message = '保険証番号は10桁でなければなりません。'
+            return render(request, '../templates/error/error_page.html', {'error_message': error_message})
+
         if expiration_date:
             if expiration_date <= patient.hokenexp:
                 error_message = '新しい有効期限は現在の有効期限より後の日付にしてください。'
@@ -305,6 +310,7 @@ def edit_patient_insurance(request, patid):
         return redirect('insurance_change_success')  # 成功ページにリダイレクト
 
     return render(request, 'reception/P102/edit_patient_insurance.html', {'patient': patient})
+
 
 
 
