@@ -10,6 +10,10 @@ urlpatterns = [
     path('r_index/', views.r_index, name='r_index'),
     # 医師ホーム画面
     path('d_index/', views.d_index, name='d_index'),
+    # 仕入先TBLホーム画面のURLパターン
+    path('supplier_tbl_home/', views.supplier_tbl_home, name='supplier_tbl_home'),
+    # 他病院TBLホーム画面のURLパターン
+    path('hospital_tbl_home/', views.hospital_tbl_home, name='hospital_tbl_home'),
     # ログアウト機能
     path('logout/', views.logout, name='logout'),
     # 従業員登録機能
@@ -22,9 +26,9 @@ urlpatterns = [
     path('supplier_TBL/', views.supplier_TBL, name='supplier_TBL'),
     # 住所検索機能
     path('address_search/', views.address_search, name='address_search'),
-    # 従業員表のパスワード変更機能
+    # 従業員＆管理者のパスワード変更機能
     path('change_password/', views.change_password, name='change_password'),
-    # 従業員（パスワード）変更成功機能
+    # パスワード変更成功機能
     path('password_change_success/', views.password_change_success, name='password_change_success'),
     # 患者登録機能
     path('patient_registration/', views.patient_registration, name='patient_registration'),

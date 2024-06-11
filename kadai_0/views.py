@@ -69,6 +69,15 @@ def d_index(request):
     return render(request, '../templates/index/d_index.html')
 
 
+# 仕入先TBLホーム画面を表示するビュー関数
+def supplier_tbl_home(request):
+    return render(request, '../templates/index/supplier_tbl_home.html')
+
+# 他病院TBLホーム画面を表示するビュー関数
+def hospital_tbl_home(request):
+    return render(request, '../templates/index/hospital_tbl_home.html')
+
+
 # ログアウト処理を行うビュー関数
 def logout(request):
     from django.contrib.auth import logout as auth_logout
@@ -401,20 +410,36 @@ def search_patients(request):
         # 受付用の検索処理 (emprole == 2)
         if emprole == 2:
             expiration_date_str = request.POST.get('expiration_date')
-            if expiration_date_str:
+            patfname = request.POST.get('patfname')
+            patiname = request.POST.get('patiname')
+
+            if expiration_date_str or patfname or patiname:
                 try:
-                    # 有効期限を日付に変換
-                    expiration_date = datetime.strptime(expiration_date_str, '%Y-%m-%d').date()
-                    # 有効期限が過ぎた患者を検索
-                    patients = Patient.objects.filter(hokenexp__lt=expiration_date)
-                    if not patients:
+                    # 患者をフィルタリングするクエリセットを取得
+                    patients = Patient.objects.all()
+
+                    if expiration_date_str:
+                        # 有効期限を日付に変換
+                        expiration_date = datetime.strptime(expiration_date_str, '%Y-%m-%d').date()
+                        # 有効期限が過ぎた患者をフィルタリング
+                        patients = patients.filter(hokenexp__lt=expiration_date)
+
+                    if patfname:
+                        # 部分一致で姓をフィルタリング
+                        patients = patients.filter(patfname__icontains=patfname)
+
+                    if patiname:
+                        # 部分一致で名をフィルタリング
+                        patients = patients.filter(patiname__icontains=patiname)
+
+                    if not patients.exists():
                         error_message = '該当する患者が見つかりません。'
                 except ValueError:
                     # 有効期限の変換に失敗した場合のエラーハンドリング
                     error_message = '有効な日付を入力してください。'
             else:
-                # 有効期限が入力されていない場合のエラーハンドリング
-                error_message = '有効期限を指定してください。'
+                # 検索条件が入力されていない場合のエラーメッセージ
+                error_message = '検索条件を入力してください。'
 
         # 医師用の検索処理 (emprole == 1)
         elif emprole == 1:
@@ -424,12 +449,12 @@ def search_patients(request):
                 # すべての患者を取得
                 patients = Patient.objects.all()
                 if patfname:
-                    # 部分一致で姓をフィルタ
+                    # 部分一致で姓をフィルタリング
                     patients = patients.filter(patfname__icontains=patfname)
                 if patiname:
-                    # 部分一致で名をフィルタ
+                    # 部分一致で名をフィルタリング
                     patients = patients.filter(patiname__icontains=patiname)
-                if not patients:
+                if not patients.exists():
                     # 該当する患者が見つからなかった場合のエラーハンドリング
                     error_message = '該当する患者が見つかりません。'
             else:

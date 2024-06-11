@@ -111,6 +111,10 @@
             {% csrf_token %}
             <label for="expiration_date">有効期限切れの患者を検索:</label><br>
             <input type="date" id="expiration_date" name="expiration_date"><br>
+            <label for="patfname">患者の姓で検索:</label><br>
+            <input type="text" id="patfname" name="patfname"><br>
+            <label for="patiname">患者の名で検索:</label><br>
+            <input type="text" id="patiname" name="patiname"><br>
             <input type="submit" value="検索">
         </form>
         {% elif emprole == 1 %}
@@ -148,7 +152,7 @@
                     <td>{{ patient.patfname }}</td>
                     <td>{{ patient.patiname }}</td>
                     <td>{{ patient.hokenmei }}</td>
-                    <td>{{ patient.hokenexp }}</td>
+                    <td>{{ patient.hokenexp|date:"Y年m月d日" }}</td>
                 {% elif emprole == 1 %}
                     <td>{{ patient.patid }}</td>
                     <td>{{ patient.patfname }}</td>
