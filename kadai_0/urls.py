@@ -30,6 +30,10 @@ urlpatterns = [
     path('change_password/', views.change_password, name='change_password'),
     # パスワード変更成功機能
     path('password_change_success/', views.password_change_success, name='password_change_success'),
+    # 従業員の名前変更機能
+    path('employee/update/', views.employee_update, name='employee_update'),
+    # 成功画面用のURLパターン
+    path('employee/update/success/', views.employee_update_success, name='employee_update_success'),
     # 患者登録機能
     path('patient_registration/', views.patient_registration, name='patient_registration'),
     # 登録成功画面

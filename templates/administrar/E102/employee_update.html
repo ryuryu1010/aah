@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>従業員更新</title>
+    <style>
+        /* スタイル定義 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .update-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group select,
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        // JavaScriptで選択した従業員情報を表示
+        function updateEmployeeInfo() {
+            const empSelect = document.getElementById('empid');
+            const currentEmpfname = document.getElementById('current_empfname');
+            const currentEmpiname = document.getElementById('current_empiname');
+            const selectedOption = empSelect.options[empSelect.selectedIndex];
+            currentEmpfname.value = selectedOption.getAttribute('data-fname');
+            currentEmpiname.value = selectedOption.getAttribute('data-iname');
+        }
+    </script>
+</head>
+<body>
+    <!-- 従業員更新フォーム -->
+    <div class="update-container">
+        <h2>従業員更新</h2>
+        <form method="post">
+            <!-- CSRFトークンの追加 -->
+            {% csrf_token %}
+            <!-- 従業員ID選択フィールド -->
+            <div class="input-group">
+                <label for="empid">従業員ID:</label>
+                <select id="empid" name="empid" onchange="updateEmployeeInfo()" required>
+                    <option value="">従業員IDを選択してください</option>
+                    {% for emp in employees %}
+                        <option value="{{ emp.empid }}" data-fname="{{ emp.empfname }}" data-iname="{{ emp.empiname }}">{{ emp.empid }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- 現在の姓表示フィールド -->
+            <div class="input-group">
+                <label for="current_empfname">現在の姓:</label>
+                <input type="text" id="current_empfname" name="current_empfname" readonly>
+            </div>
+            <!-- 現在の名表示フィールド -->
+            <div class="input-group">
+                <label for="current_empiname">現在の名:</label>
+                <input type="text" id="current_empiname" name="current_empiname" readonly>
+            </div>
+            <!-- 新しい姓入力フィールド -->
+            <div class="input-group">
+                <label for="new_empfname">新しい姓:</label>
+                <input type="text" id="new_empfname" name="new_empfname" placeholder="例: 山田" required>
+            </div>
+            <!-- 新しい名入力フィールド -->
+            <div class="input-group">
+                <label for="new_empiname">新しい名:</label>
+                <input type="text" id="new_empiname" name="new_empiname" placeholder="例: 太郎" required>
+            </div>
+            <!-- 更新ボタン -->
+            <button type="submit">更新</button>
+        </form>
+        <!-- ホーム画面へのリンク -->
+        <p class="error-message">
+            <a href="{% url 'a_index' %}">ホーム画面に戻る</a>
+        </p>
+    </div>
+</body>
+</html>

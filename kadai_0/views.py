@@ -237,6 +237,11 @@ def address_search(request):
             return render(request, '../templates/error/error_page.html', {'error_message': '住所を入力してください。'})
 
 
+
+# 電話番号を変更するビュー関数
+
+
+
 # パスワード変更を処理するビュー関数
 def change_password(request):
     # セッションから従業員の役割を取得
@@ -291,6 +296,45 @@ def change_password(request):
 def password_change_success(request):
     # パスワード変更成功ページを表示
     return render(request, 'administrar/E103/password_change_success.html')
+
+
+# 更新成功のビュー関数
+def employee_update_success(request):
+    return render(request, '../templates/administrar/E102/employee_update_success.html')
+
+
+# 従業員情報更新のビュー関数
+def employee_update(request):
+    employees = Employee.objects.all()  # すべての従業員を取得
+    employee = None
+
+    if request.method == "POST":
+        empid = request.POST.get('empid')
+        new_empfname = request.POST.get('new_empfname')
+        new_empiname = request.POST.get('new_empiname')
+
+        if not empid or not new_empfname or not new_empiname:
+            # すべてのフィールドが入力されていない場合
+            return render(request, '../templates/error/error_page.html',
+                          {'error_message': 'すべてのフィールドを入力してください。', 'emprole': request.user.emprole})
+        else:
+            try:
+                employee = Employee.objects.get(empid=empid)
+                # 氏名が変更されていない場合
+                if employee.empfname == new_empfname and employee.empiname == new_empiname:
+                    return render(request, '../templates/error/error_page.html',
+                                  {'error_message': '氏名が変更されていません。', 'emprole': request.user.emprole})
+                # 氏名を更新
+                employee.empfname = new_empfname
+                employee.empiname = new_empiname
+                employee.save()  # データベースに保存
+                return redirect('employee_update_success')  # 更新成功後に成功画面にリダイレクト
+            except Employee.DoesNotExist:
+                # 従業員IDが見つからない場合
+                return render(request, '../templates/error/error_page.html',
+                              {'error_message': '従業員IDが見つかりません。', 'emprole': request.user.emprole})
+
+    return render(request, '../templates/administrar/E102/employee_update.html', {'employees': employees, 'employee': employee})
 
 
 # 患者登録を処理するビュー関数
@@ -470,6 +514,94 @@ def search_patients(request):
     return render(request, 'reception/P104/Patient_search.html', context)
 
 
+
+# 処置を追加するビュー関数
+def add_treatments(request):
+    # 全患者情報を取得
+    patients = Patient.objects.all()
+    # 全薬剤情報を取得
+    medicines = Medicine.objects.all()
+
+    if request.method == 'POST':
+        treatment_data = []
+        for key in request.POST.keys():
+            if key.startswith('patient_id_'):
+                index = key.split('_')[-1]
+                # POSTデータから処置情報を取得
+                patient_id = request.POST.get(f'patient_id_{index}')
+                medicine_id = request.POST.get(f'medicine_id_{index}')
+                quantity = request.POST.get(f'quantity_{index}')
+                if patient_id and medicine_id and quantity:
+                    # 数量が正の整数であることを確認
+                    if int(quantity) <= 0:
+                        messages.error(request, '数量は正の整数でなければなりません。')
+                        return redirect('add_treatments')
+                    treatment_data.append({
+                        'patient_id': patient_id,
+                        'medicine_id': medicine_id,
+                        'quantity': quantity,
+                    })
+
+        # 処置データをセッションに保存して確認画面に渡す
+        request.session['treatment_data'] = treatment_data
+        return redirect('confirm_treatments')
+
+    context = {
+        'patients': patients,
+        'medicines': medicines,
+    }
+    # 処置追加ページを表示
+    return render(request, '../templates/doctor/D101/add_treatment.html', context)
+
+
+# 処置確定を行うビュー関数
+def confirm_treatments(request):
+    # セッションから処置データを取得
+    treatment_data = request.session.get('treatment_data', [])
+    # セッションから医師IDを取得
+    doctor_id = request.session.get('userID')
+
+    if request.method == 'POST':
+        for data in treatment_data:
+            patient = get_object_or_404(Patient, pk=data['patient_id'])
+            doctor = get_object_or_404(Employee, pk=doctor_id)
+            medicine = get_object_or_404(Medicine, pk=data['medicine_id'])
+            quantity = int(data['quantity'])
+            if quantity <= 0:
+                messages.error(request, '数量は正の整数でなければなりません。')
+                return redirect('add_treatments')
+
+            # 処置情報の保存
+            treatment = Treatment(patient=patient, doctor=doctor, medicine=medicine, quantity=quantity)
+            treatment.save()
+
+        messages.success(request, '処置が正常に追加されました。')
+        return redirect('treatment_success')
+
+    treatments = []
+    for data in treatment_data:
+        patient = get_object_or_404(Patient, pk=data['patient_id'])
+        medicine = get_object_or_404(Medicine, pk=data['medicine_id'])
+        treatments.append({
+            'patient': patient,
+            'medicine': medicine,
+            'quantity': data['quantity']
+        })
+
+    context = {
+        'treatment_data': treatments,
+    }
+    # 処置確認ページを表示
+    return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
+
+
+# 処置追加成功ページを表示するビュー関数
+def treatment_success(request):
+    # 処置追加成功ページを表示
+    return render(request, '../templates/doctor/D103/treatment_success.html')
+
+
+
 # 処置の確認を行うビュー関数
 def treatment_history(request):
     patient = None
@@ -512,6 +644,24 @@ def error_page(request):
     emprole = request.session.get('emp_role', None)
     # エラーページを表示
     return render(request, '../templates/error/error_page.html', {'error_message': error_message, 'emprole': emprole})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # 処置数量を複数一度に減らすためのビュー関数
@@ -608,88 +758,3 @@ def treatment_quantity_reduction_success(request):
     # 処置数量減少成功ページを表示
     return render(request, '../templates/doctor/D103/treatment_quantity_reduction_success.html')
 
-
-# 処置を追加するビュー関数
-def add_treatments(request):
-    # 全患者情報を取得
-    patients = Patient.objects.all()
-    # 全薬剤情報を取得
-    medicines = Medicine.objects.all()
-
-    if request.method == 'POST':
-        treatment_data = []
-        for key in request.POST.keys():
-            if key.startswith('patient_id_'):
-                index = key.split('_')[-1]
-                # POSTデータから処置情報を取得
-                patient_id = request.POST.get(f'patient_id_{index}')
-                medicine_id = request.POST.get(f'medicine_id_{index}')
-                quantity = request.POST.get(f'quantity_{index}')
-                if patient_id and medicine_id and quantity:
-                    # 数量が正の整数であることを確認
-                    if int(quantity) <= 0:
-                        messages.error(request, '数量は正の整数でなければなりません。')
-                        return redirect('add_treatments')
-                    treatment_data.append({
-                        'patient_id': patient_id,
-                        'medicine_id': medicine_id,
-                        'quantity': quantity,
-                    })
-
-        # 処置データをセッションに保存して確認画面に渡す
-        request.session['treatment_data'] = treatment_data
-        return redirect('confirm_treatments')
-
-    context = {
-        'patients': patients,
-        'medicines': medicines,
-    }
-    # 処置追加ページを表示
-    return render(request, '../templates/doctor/D101/add_treatment.html', context)
-
-
-# 処置確定を行うビュー関数
-def confirm_treatments(request):
-    # セッションから処置データを取得
-    treatment_data = request.session.get('treatment_data', [])
-    # セッションから医師IDを取得
-    doctor_id = request.session.get('userID')
-
-    if request.method == 'POST':
-        for data in treatment_data:
-            patient = get_object_or_404(Patient, pk=data['patient_id'])
-            doctor = get_object_or_404(Employee, pk=doctor_id)
-            medicine = get_object_or_404(Medicine, pk=data['medicine_id'])
-            quantity = int(data['quantity'])
-            if quantity <= 0:
-                messages.error(request, '数量は正の整数でなければなりません。')
-                return redirect('add_treatments')
-
-            # 処置情報の保存
-            treatment = Treatment(patient=patient, doctor=doctor, medicine=medicine, quantity=quantity)
-            treatment.save()
-
-        messages.success(request, '処置が正常に追加されました。')
-        return redirect('treatment_success')
-
-    treatments = []
-    for data in treatment_data:
-        patient = get_object_or_404(Patient, pk=data['patient_id'])
-        medicine = get_object_or_404(Medicine, pk=data['medicine_id'])
-        treatments.append({
-            'patient': patient,
-            'medicine': medicine,
-            'quantity': data['quantity']
-        })
-
-    context = {
-        'treatment_data': treatments,
-    }
-    # 処置確認ページを表示
-    return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
-
-
-# 処置追加成功ページを表示するビュー関数
-def treatment_success(request):
-    # 処置追加成功ページを表示
-    return render(request, '../templates/doctor/D103/treatment_success.html')
