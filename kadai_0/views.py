@@ -125,7 +125,7 @@ def employee_registration(request):
             return render(request, '../templates/error/error_page.html', {'error_message': str(e)})
 
     # 従業員登録ページを表示
-    return render(request, '../templates/administrar/E101/Current_employee_registration_function.html')
+    return render(request, '../templates/administrar/E101/Current _employee_registration_function.html')
 
 
 # 従業員リストを表示するビュー関数
@@ -209,7 +209,7 @@ def supplier_TBL(request):
                       {'error_message': '仕入先一覧を取得できませんでした。'})
 
     # 仕入先テーブルページを表示
-    return render(request, '../templates/administrar/S102/Supplier_TBL.html', {'suppliers': suppliers})
+    return render(request, '../templates/administrar/S102/Supplier _TBL.html', {'suppliers': suppliers})
 
 
 # 住所検索を処理するビュー関数
