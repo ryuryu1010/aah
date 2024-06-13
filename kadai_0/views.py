@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404  # Djangoのシ
 from django.contrib import messages  # Djangoのメッセージフレームワークをインポート
 from django.utils.dateparse import parse_date  # 日付の解析モジュールをインポート
 from django.db.models import Q  # OR条件を作成するためのモジュールをインポート
-from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine  # モデルをインポート
+from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine, Tabyouin  # モデルをインポート
 from urllib.parse import urlencode  # URLエンコードモジュールをインポート
 
 
@@ -405,6 +405,117 @@ def employee_update(request):
                               {'error_message': '従業員IDが見つかりません。', 'emprole': request.user.emprole})
 
     return render(request, '../templates/administrar/E102/employee_update.html', {'employees': employees, 'employee': employee})
+
+
+
+
+# 他病院登録機能
+def register_hospital(request):
+    if request.method == 'POST':
+        # POSTデータから他病院情報を取得
+        tabyouinid = request.POST['tabyouinid']
+        tabyouinmei = request.POST['tabyouinmei']
+        tabyouinaddress = request.POST['tabyouinaddress']
+        tabyouintel = request.POST['tabyouintel']
+        byouinshihonkin = request.POST['byouinshihonkin']
+        kyukyu = request.POST['kyukyu']
+
+        # フィールドの長さのバリデーション
+        if len(tabyouinid) > 8:
+            return redirect('/error_page/?error_message=他病院IDが長すぎます。')
+        if len(tabyouinmei) > 64:
+            return redirect('/error_page/?error_message=他病院名が長すぎます。')
+        if len(tabyouinaddress) > 64:
+            return redirect('/error_page/?error_message=他病院住所が長すぎます。')
+        if len(tabyouintel) > 15:
+            return redirect('/error_page/?error_message=他病院電話番号が長すぎます。')
+        if len(tabyouintel) < 10:
+            return redirect('/error_page/?error_message=他病院電話番号は最低10文字である必要があります。')
+
+        # 電話番号のバリデーション
+        if not re.match(r'^[0-9()\-]+$', tabyouintel):
+            return redirect('/error_page/?error_message=電話番号には数字、括弧、ハイフン以外の文字は使用できません。')
+
+        # 資本金のバリデーション
+        if not re.match(r'^[0-9,¥]+$', byouinshihonkin):
+            return redirect('/error_page/?error_message=資本金には数値、カンマ、円記号以外の文字は使用できません。')
+
+        # 他病院IDの重複確認
+        if Tabyouin.objects.filter(tabyouinid=tabyouinid).exists():
+            return redirect('/error_page/?error_message=他病院IDが既に存在します。')
+
+        # 他病院情報の保存
+        new_hospital = Tabyouin(
+            tabyouinid=tabyouinid,
+            tabyouinmei=tabyouinmei,
+            abyouinaddress=tabyouinaddress,
+            tabyouintel=tabyouintel,
+            byouinshihonk=byouinshihonkin,
+            kyukyu=kyukyu
+        )
+        new_hospital.save()
+        messages.success(request, '他病院が正常に登録されました。')
+        return redirect('hospital_list')
+
+    # 他病院追加ページを表示
+    return render(request, '../templates/administrar/H101/register_hospital.html')
+
+# 他病院一覧表示機能
+def hospital_list(request):
+    try:
+        # 全他病院情報を取得
+        hospitals = Tabyouin.objects.all()
+    except Exception:
+        # エラーメッセージを表示
+        return render(request, '../templates/error/error_page.html', {'error_message': '他病院一覧を取得できませんでした。'})
+
+    # 他病院一覧ページを表示
+    return render(request, '../templates/administrar/H102/hospital_list.html', {'hospitals': hospitals})
+
+
+
+
+# 他住所→病院検索機能
+def search_hospital_by_address(request):
+    if request.method == 'POST':
+        # POSTデータから住所検索キーワードを取得
+        address = request.POST['address']
+        results = Tabyouin.objects.filter(tabyouinaddress__icontains=address)
+        if not results.exists():
+            messages.error(request, '該当する病院が見つかりません。')
+        # 検索結果を表示
+        return render(request, '../templates/administrar/H103/search_hospital_by_address.html', {'results': results})
+
+    # 住所検索ページを表示
+    return render(request, '../templates/administrar/H103/search_hospital_by_address.html')
+
+
+# 資本金→他病院検索機能
+def search_hospital_by_capital(request):
+    if request.method == 'POST':
+        # POSTデータから資本金検索キーワードを取得
+        capital = request.POST['capital']
+        results = Tabyouin.objects.filter(byouinshihonkin__gte=capital)
+        if not results.exists():
+            messages.error(request, '該当する病院が見つかりません。')
+        # 検索結果を表示
+        return render(request, '../templates/administrar/H104/search_hospital_by_capital.html', {'results': results})
+
+    # 資本金検索ページを表示
+    return render(request, '../templates/administrar/H104/search_hospital_by_capital.html')
+
+
+# 他病院情報変更機能
+def edit_hospital_info(request, tabyouinid):
+    hospital = get_object_or_404(Tabyouin, tabyouinid=tabyouinid)
+
+    if request.method == 'POST':
+        hospital.tabyouintel = request.POST['tabyouintel']
+        hospital.save()
+        messages.success(request, '他病院情報が正常に変更されました。')
+        return redirect('hospital_list')
+
+    return render(request, '../templates/administrar/H105/edit_hospital_info.html', {'hospital': hospital})
 
 
 # 患者登録を処理するビュー関数

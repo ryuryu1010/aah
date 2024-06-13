@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>資本金で病院検索</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            text-align: center;
+            color: #0277bd;
+            margin-top: 20px;
+        }
+        form {
+            width: 50%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            color: #000;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #0277bd;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #01579b;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #ffffff;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #b3e5fc;
+        }
+        tr:nth-child(even) {
+            background-color: #f1f8e9;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+        ul li {
+            margin: 10px 0;
+        }
+        ul li a {
+            display: block;
+            padding: 10px;
+            background-color: #0277bd;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        ul li a:hover {
+            background-color: #01579b;
+        }
+        .messages {
+            width: 50%;
+            margin: 20px auto;
+            background-color: #ffccbc;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h2>資本金で病院検索</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="capital">資本金:</label>
+        <input type="number" id="capital" name="capital" required>
+        <button type="submit">検索</button>
+    </form>
+    {% if results %}
+        <h3>検索結果</h3>
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>病院名</th>
+                <th>住所</th>
+                <th>電話番号</th>
+                <th>資本金</th>
+                <th>救急対応</th>
+            </tr>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.tabyouinid }}</td>
+                <td>{{ result.tabyouinmei }}</td>
+                <td>{{ result.tabyouinaddress }}</td>
+                <td>{{ result.tabyouintel }}</td>
+                <td>{{ result.byouinshihonkin }}</td>
+                <td>{{ result.kyukyu }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    <ul>
+        <li><a href="{% url 'hospital_tbl_home' %}">他病院TBLホーム画面</a></li>
+    </ul>
+</body>
+</html>

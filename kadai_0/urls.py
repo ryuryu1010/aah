@@ -32,6 +32,16 @@ urlpatterns = [
     path('supplier_list/', views.supplier_list, name='supplier_list'),
     # 仕入先TBL：電話番号変更ページのURLパターン
     path('supplier/<str:shiireid>/change_phone/', views.change_phone_number, name='change_phone_number'),
+    # 他病院登録機能のURLパターン。ビュー関数register_hospitalを呼び出します。
+    path('register_hospital/', views.register_hospital, name='register_hospital'),
+    # 他病院一覧表示機能のURLパターン。ビュー関数hospital_listを呼び出します。
+    path('hospital_list/', views.hospital_list, name='hospital_list'),
+    # 住所による他病院検索機能のURLパターン。ビュー関数search_hospital_by_addressを呼び出します。
+    path('search_hospital_by_address/', views.search_hospital_by_address, name='search_hospital_by_address'),
+    # 資本金による他病院検索機能のURLパターン。ビュー関数search_hospital_by_capitalを呼び出します。
+    path('search_hospital_by_capital/', views.search_hospital_by_capital, name='search_hospital_by_capital'),
+    # 他病院情報変更機能のURLパターン。ビュー関数edit_hospital_infoを呼び出します。
+    path('edit_hospital_info/<str:tabyouinid>/', views.edit_hospital_info, name='edit_hospital_info'),
     # 従業員＆管理者のパスワード変更機能
     path('change_password/', views.change_password, name='change_password'),
     # パスワード変更成功機能

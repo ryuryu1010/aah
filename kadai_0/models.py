@@ -5,17 +5,18 @@ from django.db import models
 
 
 
-# 他病院表
+from django.db import models
 
+# 他病院表
 class Tabyouin(models.Model):
     tabyouinid = models.CharField(max_length=8, primary_key=True)
     tabyouinmei = models.CharField(max_length=64)
     abyouinaddress = models.CharField(max_length=64)
-    tabyouintel = models.CharField(max_length=13)
+    tabyouintel = models.CharField(max_length=15)  # 電話番号の長さを調整
     byouinshihonk = models.IntegerField()
-    kyukyu = models.IntegerField()
+    kyukyu = models.BooleanField()  # 救急対応をブール型に変更
 
-# 仕入れ先表
+
 
 class Shiiregyosha(models.Model):
     shiireid = models.CharField(max_length=8, primary_key=True)

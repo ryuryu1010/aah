@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>他病院情報変更</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            text-align: center;
+            color: #0277bd;
+            margin-top: 20px;
+        }
+        form {
+            width: 50%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            color: #000;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #0277bd;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #01579b;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+        ul li {
+            margin: 10px 0;
+        }
+        ul li a {
+            display: block;
+            padding: 10px;
+            background-color: #0277bd;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        ul li a:hover {
+            background-color: #01579b;
+        }
+    </style>
+</head>
+<body>
+    <h2>他病院情報変更</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="tabyouintel">電話番号:</label>
+        <input type="text" id="tabyouintel" name="tabyouintel" value="{{ hospital.tabyouintel }}" required>
+        <button type="submit">変更</button>
+    </form>
+    <ul>
+        <li><a href="{% url 'hospital_tbl_home' %}">他病院TBLホーム画面</a></li>
+    </ul>
+</body>
+</html>

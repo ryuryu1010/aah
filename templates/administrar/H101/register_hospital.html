@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>他病院登録</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>他病院登録</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="tabyouinid">他病院ID:</label>
+            <input type="text" id="tabyouinid" name="tabyouinid" required>
+            
+            <label for="tabyouinmei">他病院名:</label>
+            <input type="text" id="tabyouinmei" name="tabyouinmei" required>
+            
+            <label for="tabyouinaddress">他病院住所:</label>
+            <input type="text" id="tabyouinaddress" name="tabyouinaddress" required>
+            
+            <label for="tabyouintel">他病院電話番号:</label>
+            <input type="text" id="tabyouintel" name="tabyouintel" required>
+            
+            <label for="byouinshihonkin">資本金:</label>
+            <input type="number" id="byouinshihonkin" name="byouinshihonkin" required>
+            
+            <label for="kyukyu">救急対応:</label>
+            <select id="kyukyu" name="kyukyu" required>
+                <option value="0">できない</option>
+                <option value="1">できる</option>
+            </select>
+            
+            <button type="submit">登録</button>
+        </form>
+        <a href="{% url 'hospital_tbl_home' %}">他病院TBLホーム画面</a>
+    </div>
+</body>
+</html>
