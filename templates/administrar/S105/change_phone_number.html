@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>電話番号変更</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form p {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>電話番号変更 - {{ supplier.shiiremei }}</h1>
+        <form method="post">
+            {% csrf_token %}
+            <p>
+                <label for="shiiremei">仕入れ先名:</label>
+                <input type="text" id="shiiremei" name="shiiremei" value="{{ supplier.shiiremei }}" readonly>
+            </p>
+            <p>
+                <label for="shiiretel">現在の電話番号:</label>
+                <input type="text" id="shiiretel" name="shiiretel" value="{{ supplier.shiiretel }}" readonly>
+            </p>
+            <p>
+                <label for="new_telephone">新しい電話番号:</label>
+                <input type="text" id="new_telephone" name="new_telephone" required>
+            </p>
+            <button type="submit">変更する</button>
+        </form>
+        <a href="{% url 'supplier_tbl_home' %}" class="back-link">仕入れ先画面に戻る</a>
+    </div>
+</body>
+</html>

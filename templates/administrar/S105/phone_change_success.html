@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>電話番号変更成功</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin: 10px;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>電話番号変更成功</h1>
+        <p>{{ supplier.shiiremei }}の電話番号が{{ supplier.shiiretel }}に変更されました。</p>
+        <a href="{% url 'supplier_tbl_home' %}" class="back-link">仕入れ先画面に戻る</a>
+        <a href="{% url 'supplier_list' %}" class="back-link">電話番号変更画面に戻る</a>
+    </div>
+</body>
+</html>

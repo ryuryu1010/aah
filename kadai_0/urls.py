@@ -30,6 +30,10 @@ urlpatterns = [
     path('change_password/', views.change_password, name='change_password'),
     # パスワード変更成功機能
     path('password_change_success/', views.password_change_success, name='password_change_success'),
+    # 仕入先一覧ページのURLパターン（電話番号変更用）
+    path('supplier_list/', views.supplier_list, name='supplier_list'),
+    # 電話番号変更ページのURLパターン
+    path('supplier/<str:shiireid>/change_phone/', views.change_phone_number, name='change_phone_number'),
     # 従業員の名前変更機能
     path('employee/update/', views.employee_update, name='employee_update'),
     # 成功画面用のURLパターン

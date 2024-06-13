@@ -237,8 +237,44 @@ def address_search(request):
             return render(request, '../templates/error/error_page.html', {'error_message': '住所を入力してください。'})
 
 
+# 仕入先一覧表示ビュー
+def supplier_list(request):
+    suppliers = Shiiregyosha.objects.all()
+    return render(request, '../templates/administrar/S105/supplier_list.html', {'suppliers': suppliers})
 
-# 電話番号を変更するビュー関数
+
+
+# 電話番号変更ビュー
+def change_phone_number(request, shiireid):
+    # 仕入れ先オブジェクトを取得、存在しない場合は404エラー
+    supplier = get_object_or_404(Shiiregyosha, pk=shiireid)
+
+    if request.method == 'POST':
+        new_telephone = request.POST.get('new_telephone')  # 新しい電話番号を取得
+        error_message = None
+
+        # 電話番号が数字、括弧、ハイフンのみを含むかどうかをチェック
+        if not re.match(r'^[0-9()-]+$', new_telephone):
+            error_message = "電話番号は半角数字、括弧、ハイフンのみを含むことができます。"
+        # 電話番号の長さをチェック（11桁から15桁）
+        elif len(new_telephone) < 11 or len(new_telephone) > 15:
+            error_message = "電話番号は11桁から15桁でなければなりません。"
+        # 新しい電話番号が現在の電話番号と同じかどうかをチェック
+        elif new_telephone == supplier.shiiretel:
+            error_message = "新しい電話番号が現在の電話番号と同じです。"
+
+        if error_message:
+            # エラーがある場合はエラーページを表示
+            return render(request, '../templates/error/error_page.html', {'error_message': error_message})
+        else:
+            # 電話番号を更新して保存
+            supplier.shiiretel = new_telephone
+            supplier.save()
+            # 成功画面を表示
+            return render(request, '../templates/administrar/S105/phone_change_success.html', {'supplier': supplier})
+
+    # GETリクエストの場合、変更ページを表示
+    return render(request, '../templates/administrar/S105/change_phone_number.html', {'supplier': supplier})
 
 
 
