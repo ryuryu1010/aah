@@ -237,9 +237,43 @@ def address_search(request):
             return render(request, '../templates/error/error_page.html', {'error_message': '住所を入力してください。'})
 
 
+# 資本金で仕入れ先を検索するビュー
+def search_by_capital(request):
+    query = request.GET.get('capital')
+    suppliers = None
+    if query:
+        # 入力バリデーション: 全角・半角の数字、円記号、カンマ以外はエラー
+        if not re.match(r'^[0-9０-９＄\$￥\\,]*$', query):
+            return render(request, '../templates/error/error_page.html', {'error_message': '無効な文字が含まれています。'})
+
+        # 半角数字に変換
+        capital_str = re.sub(r'[＄\$￥\\,]', '', query)  # 円記号とカンマを削除
+        capital_str = capital_str.translate(str.maketrans('０１２３４５６７８９', '0123456789'))
+
+        try:
+            capital = int(capital_str)
+            suppliers = Shiiregyosha.objects.filter(shihonkin__gte=capital)
+            if not suppliers.exists():
+                suppliers = None
+                message = f"資本金が{capital}以上の仕入れ先は見つかりませんでした。"
+            else:
+                message = None
+        except ValueError:
+            suppliers = None
+            message = "有効な数字を入力してください。"
+    else:
+        message = None
+
+    return render(request, '../templates/administrar/S104/search_by_capital.html', {'suppliers': suppliers, 'query': query, 'message': message})
+
+
 # 仕入先一覧表示ビュー
 def supplier_list(request):
-    suppliers = Shiiregyosha.objects.all()
+    query = request.GET.get('q')
+    if query:
+        suppliers = Shiiregyosha.objects.filter(shiiremei__icontains=query)
+    else:
+        suppliers = Shiiregyosha.objects.all()
     return render(request, '../templates/administrar/S105/supplier_list.html', {'suppliers': suppliers})
 
 

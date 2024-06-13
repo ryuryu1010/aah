@@ -42,13 +42,7 @@
     <div class="container">
         <h1>エラー</h1>
         <p>{{ error_message }}</p>
-        {% if emprole == 0 %}
-            <a href="{% url 'a_index' %}">管理者画面に戻る</a>
-        {% elif emprole == 1 %}
-            <a href="{% url 'd_index' %}">医師画面に戻る</a>
-        {% elif emprole == 2 %}
-            <a href="{% url 'r_index' %}">受付画面に戻る</a>
-        {% endif %}
+        <a href="javascript:history.back()">一つ前の画面に戻る</a>
     </div>
 </body>
 </html>

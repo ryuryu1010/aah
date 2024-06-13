@@ -20,20 +20,22 @@ urlpatterns = [
     path('employee_registration/', views.employee_registration, name='employee_registration'),
     # 従業員一覧機能
     path('employee_list/', views.employee_list, name='employee_list'),
-    # 仕入先追加フォーム機能
+    # 仕入先TBL：仕入先追加フォーム機能
     path('Add_vendor/', views.Add_vendor, name='Add_vendor'),
-    # 仕入先一覧機能
+    # 仕入先TBL：仕入先一覧機能
     path('supplier_TBL/', views.supplier_TBL, name='supplier_TBL'),
-    # 住所検索機能
+    # 仕入先TBL：住所検索機能
     path('address_search/', views.address_search, name='address_search'),
+    # 仕入先TBL：資本金検索
+    path('search_by_capital/', views.search_by_capital, name='search_by_capital'),
+    # 仕入先TBL：仕入先一覧ページのURLパターン（電話番号変更用）
+    path('supplier_list/', views.supplier_list, name='supplier_list'),
+    # 仕入先TBL：電話番号変更ページのURLパターン
+    path('supplier/<str:shiireid>/change_phone/', views.change_phone_number, name='change_phone_number'),
     # 従業員＆管理者のパスワード変更機能
     path('change_password/', views.change_password, name='change_password'),
     # パスワード変更成功機能
     path('password_change_success/', views.password_change_success, name='password_change_success'),
-    # 仕入先一覧ページのURLパターン（電話番号変更用）
-    path('supplier_list/', views.supplier_list, name='supplier_list'),
-    # 電話番号変更ページのURLパターン
-    path('supplier/<str:shiireid>/change_phone/', views.change_phone_number, name='change_phone_number'),
     # 従業員の名前変更機能
     path('employee/update/', views.employee_update, name='employee_update'),
     # 成功画面用のURLパターン

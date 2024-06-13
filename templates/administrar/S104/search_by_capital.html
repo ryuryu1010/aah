@@ -2,7 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>仕入先一覧</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資本金で仕入れ先を検索</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,20 +23,19 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 800px;
+            text-align: center;
         }
         h1 {
             color: #007bff;
-            text-align: center;
             margin-bottom: 20px;
         }
         form {
-            text-align: center;
             margin-bottom: 20px;
         }
         input[type="text"] {
             padding: 8px;
             width: 80%;
-            max-width: 400px;
+            max-width: 300px;
             margin-right: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -55,7 +55,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
         table, th, td {
             border: 1px solid #ddd;
@@ -93,33 +93,37 @@
 </head>
 <body>
     <div class="container">
-        <h1>一覧</h1>
-        <form method="get" action="{% url 'supplier_list' %}">
-            <input type="text" name="q" placeholder="氏名で検索" value="{{ query|default:'' }}">
+        <h1>資本金で仕入れ先を検索</h1>
+        <form method="get" action="{% url 'search_by_capital' %}">
+            <input type="text" name="capital" placeholder="資本金を入力" value="{{ query|default:'' }}">
             <button type="submit">検索</button>
         </form>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>氏名</th>
-                    <th>住所</th>
-                    <th>電話番号</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for supplier in suppliers %}
-                <tr>
-                    <td>{{ supplier.shiireid }}</td>
-                    <td>{{ supplier.shiiremei }}</td>
-                    <td>{{ supplier.shiireaddress }}</td>
-                    <td>{{ supplier.shiiretel }}</td>
-                    <td><a href="{% url 'change_phone_number' supplier.shiireid %}">電話番号変更</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% if message %}
+            <p>{{ message }}</p>
+        {% elif suppliers %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>氏名</th>
+                        <th>住所</th>
+                        <th>電話番号</th>
+                        <th>資本金</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in suppliers %}
+                    <tr>
+                        <td>{{ supplier.shiireid }}</td>
+                        <td>{{ supplier.shiiremei }}</td>
+                        <td>{{ supplier.shiireaddress }}</td>
+                        <td>{{ supplier.shiiretel }}</td>
+                        <td>{{ supplier.shihonkin }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
         <a href="{% url 'supplier_tbl_home' %}" class="back-link">仕入れ先画面に戻る</a>
     </div>
 </body>
