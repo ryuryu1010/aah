@@ -472,50 +472,120 @@ def hospital_list(request):
     # 他病院一覧ページを表示
     return render(request, '../templates/administrar/H102/hospital_list.html', {'hospitals': hospitals})
 
-
-
-
-# 他住所→病院検索機能
+# 住所検索を処理するビュー関数
 def search_hospital_by_address(request):
+    if request.method == 'GET':
+        # 住所検索ページを表示
+        return render(request, 'administrar/H103/search_hospital_by_address.html')
+
     if request.method == 'POST':
         # POSTデータから住所検索キーワードを取得
-        address = request.POST['address']
-        results = Tabyouin.objects.filter(tabyouinaddress__icontains=address)
-        if not results.exists():
-            messages.error(request, '該当する病院が見つかりません。')
-        # 検索結果を表示
-        return render(request, '../templates/administrar/H103/search_hospital_by_address.html', {'results': results})
+        address_search = request.POST.get('address_search', '')
+        if address_search:
+            # 住所キーワードで他病院を検索
+            results = Tabyouin.objects.filter(abyouinaddress__icontains=address_search)
+            if results.exists():
+                # 検索結果を表示
+                return render(request, 'administrar/H103/search_hospital_by_address.html', {'results': results})
+            else:
+                # 一致する他病院が見つからない場合のエラーメッセージ表示
+                return render(request, '../templates/error/error_page.html', {'error_message': '一致する他病院が見つかりませんでした。'})
+        else:
+            # 住所が入力されていない場合のエラーメッセージ表示
+            return render(request, '../templates/error/error_page.html', {'error_message': '住所を入力してください。'})
 
-    # 住所検索ページを表示
-    return render(request, '../templates/administrar/H103/search_hospital_by_address.html')
 
-
-# 資本金→他病院検索機能
+# 資本金で他病院を検索するビュー
 def search_hospital_by_capital(request):
     if request.method == 'POST':
-        # POSTデータから資本金検索キーワードを取得
-        capital = request.POST['capital']
-        results = Tabyouin.objects.filter(byouinshihonkin__gte=capital)
-        if not results.exists():
-            messages.error(request, '該当する病院が見つかりません。')
-        # 検索結果を表示
-        return render(request, '../templates/administrar/H104/search_hospital_by_capital.html', {'results': results})
+        query = request.POST.get('capital_search', '')
+        hospitals = None
+        message = None
 
-    # 資本金検索ページを表示
-    return render(request, '../templates/administrar/H104/search_hospital_by_capital.html')
+        if query:
+            # 入力バリデーション: 全角・半角の数字、円記号、カンマ以外はエラー
+            if not re.match(r'^[0-9０-９＄\$￥\\,]*$', query):
+                message = '無効な文字が含まれています。'
+            else:
+                # 半角数字に変換
+                capital_str = re.sub(r'[＄\$￥\\,]', '', query)  # 円記号とカンマを削除
+                capital_str = capital_str.translate(str.maketrans('０１２３４５６７８９', '0123456789'))
+
+                try:
+                    capital = int(capital_str)
+                    hospitals = Tabyouin.objects.filter(byouinshihonk__gte=capital)
+                    if not hospitals.exists():
+                        hospitals = None
+                        message = f"資本金が{capital}以上の他病院は見つかりませんでした。"
+                except ValueError:
+                    message = "有効な数字を入力してください。"
+
+        else:
+            message = "資本金を入力してください。"
+
+        return render(request, 'administrar/H104/search_hospital_by_capital.html', {'hospitals': hospitals, 'query': query, 'message': message})
+
+    # GETリクエストの場合、検索ページを表示
+    return render(request, 'administrar/H104/search_hospital_by_capital.html')
 
 
-# 他病院情報変更機能
+
+
+
+
+# 他病院一覧表示ビュー
+def hospital_list(request):
+    query = request.GET.get('q')
+    if query:
+        hospitals = Tabyouin.objects.filter(tabyouinmei__icontains=query)
+    else:
+        hospitals = Tabyouin.objects.all()
+    return render(request, 'administrar/H102/hospital_list.html', {'hospitals': hospitals})
+
+# 電話番号変更ビュー
 def edit_hospital_info(request, tabyouinid):
-    hospital = get_object_or_404(Tabyouin, tabyouinid=tabyouinid)
+    # 他病院オブジェクトを取得、存在しない場合は404エラー
+    hospital = get_object_or_404(Tabyouin, pk=tabyouinid)
 
     if request.method == 'POST':
-        hospital.tabyouintel = request.POST['tabyouintel']
-        hospital.save()
-        messages.success(request, '他病院情報が正常に変更されました。')
-        return redirect('hospital_list')
+        new_telephone = request.POST.get('new_telephone')  # 新しい電話番号を取得
+        error_message = None
 
-    return render(request, '../templates/administrar/H105/edit_hospital_info.html', {'hospital': hospital})
+        # 電話番号が数字、括弧、ハイフンのみを含むかどうかをチェック
+        if not re.match(r'^[0-9()-]+$', new_telephone):
+            error_message = "電話番号は半角数字、括弧、ハイフンのみを含むことができます。"
+        # 電話番号の長さをチェック（11桁から15桁）
+        elif len(new_telephone) < 11 or len(new_telephone) > 15:
+            error_message = "電話番号は11桁から15桁でなければなりません。"
+        # 新しい電話番号が現在の電話番号と同じかどうかをチェック
+        elif new_telephone == hospital.tabyouintel:
+            error_message = "新しい電話番号が現在の電話番号と同じです。"
+
+        if error_message:
+            # エラーがある場合はエラーページを表示
+            return render(request, '../templates/error/error_page.html', {'error_message': error_message})
+        else:
+            # 電話番号を更新して保存
+            hospital.tabyouintel = new_telephone
+            hospital.save()
+            # 成功画面を表示
+            return render(request, 'administrar/H105/phonechange_success.html', {'hospital': hospital})
+
+    # GETリクエストの場合、変更ページを表示
+    return render(request, 'administrar/H105/edit_hospital_info.html', {'hospital': hospital})
+
+
+
+# 他病院一覧表示ビュー
+def hospital_tbl(request):
+    query = request.GET.get('q')
+    if query:
+        hospitals = Tabyouin.objects.filter(tabyouinmei__icontains=query)
+    else:
+        hospitals = Tabyouin.objects.all()
+    return render(request, '../templates/administrar/H105/hospital_tbl.html', {'hospitals': hospitals})
+
+
 
 
 # 患者登録を処理するビュー関数

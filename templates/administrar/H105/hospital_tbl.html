@@ -2,100 +2,127 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>仕入先一覧</title>
+    <title>他病院一覧</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
             margin: 0;
             padding: 0;
-            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             color: #333;
         }
-
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
         h1 {
-            text-align: center;
-            margin-top: 20px;
             color: #007bff;
-        }
-
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background-color: #fff;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            text-align: left;
-            padding: 12px;
-        }
-
-        th {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        a.button {
-            display: block;
-            width: 200px;
-            margin: 20px auto;
-            padding: 10px;
             text-align: center;
-            text-decoration: none;
-            color: #fff;
-            background-color: #007bff;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
-
-        a.button:hover {
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 80%;
+            max-width: 400px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
             background-color: #0056b3;
         }
-
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 10px;
-            color: #007bff;
-            text-decoration: none;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
         }
-
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #cce5ff;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
         a:hover {
             color: #0056b3;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .back-link:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>他病院一覧</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>仕入れ先名</th>
-                <th>住所</th>
-                <th>電話番号</th>
-                <th>資本金</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for supplier in suppliers %}
-            <tr>
-                <td>{{ supplier.tabyouinid }}</td>
-                <td>{{ supplier.tabyouinmei }}</td>
-                <td>{{ supplier.abyouinaddress }}</td>
-                <td>{{ supplier.tabyouintel }}</td>
-                <td>{{ supplier.byouinshihonk }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{% url 'supplier_tbl_home' %}">仕入れ先画面に戻る</a>
+    <div class="container">
+        <h1>他病院一覧</h1>
+        <form method="get" action="{% url 'hospital_list' %}">
+            <input type="text" name="q" placeholder="病院名で検索" value="{{ query|default:'' }}">
+            <button type="submit">検索</button>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>病院名</th>
+                    <th>住所</th>
+                    <th>電話番号</th>
+                    <th>資本金</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hospital in hospitals %}
+                <tr>
+                    <td>{{ hospital.tabyouinid }}</td>
+                    <td>{{ hospital.tabyouinmei }}</td>
+                    <td>{{ hospital.tabyouinaddress }}</td>
+                    <td>{{ hospital.tabyouintel }}</td>
+                    <td>{{ hospital.byouinshihonk }}</td>
+                    <td><a href="{% url 'edit_hospital_info' hospital.tabyouinid %}">電話番号変更</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'hospital_tbl_home' %}" class="back-link">他病院TBLホーム画面に戻る</a>
+    </div>
 </body>
 </html>

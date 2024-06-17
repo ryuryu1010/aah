@@ -2,95 +2,97 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>電話番号変更</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #e6f2ff;
             margin: 0;
             padding: 0;
-            background-color: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             color: #333;
         }
-
         .container {
-            width: 50%;
-            margin: 50px auto;
+            background-color: #ffffff;
             padding: 20px;
-            background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
         }
-
         h1 {
-            text-align: center;
             color: #007bff;
+            text-align: center;
             margin-bottom: 20px;
         }
-
-        form {
-            display: flex;
-            flex-direction: column;
+        form p {
+            margin-bottom: 15px;
         }
-
         label {
+            display: block;
             font-weight: bold;
             margin-bottom: 5px;
-            color: #333;
         }
-
         input[type="text"] {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #007bff;
-            border-radius: 4px;
+            padding: 8px;
             box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-
-        input[type="submit"] {
+        button {
             width: 100%;
             padding: 10px;
             background-color: #007bff;
-            color: #fff;
             border: none;
             border-radius: 4px;
-            cursor: pointer;
+            color: #fff;
             font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
-
-        input[type="submit"]:hover {
+        button:hover {
             background-color: #0056b3;
         }
-
-        a {
-            display: block;
-            text-align: center;
-            margin-top: 10px;
-            color: #007bff;
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
             text-decoration: none;
+            color: #ffffff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
         }
-
-        a:hover {
-            color: #0056b3;
+        .back-link:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>電話番号変更</h1>
+        <h1>電話番号変更 - {{ hospital.tabyouinmei }}</h1>
         <form method="post">
             {% csrf_token %}
-            <label for="tabyouinid">他病院 ID:</label>
-            <input type="text" id="tabyouinid" name="tabyouinid" required>
-
-            <label for="new_phone_number">新しい電話番号:</label>
-            <input type="text" id="new_phone_number" name="new_phone_number" required>
-
-            <input type="submit" value="変更する">
+            <p>
+                <label for="tabyouinmei">病院名:</label>
+                <input type="text" id="tabyouinmei" name="tabyouinmei" value="{{ hospital.tabyouinmei }}" readonly>
+            </p>
+            <p>
+                <label for="tabyouintel">現在の電話番号:</label>
+                <input type="text" id="tabyouintel" name="tabyouintel" value="{{ hospital.tabyouintel }}" readonly>
+            </p>
+            <p>
+                <label for="new_telephone">新しい電話番号:</label>
+                <input type="text" id="new_telephone" name="new_telephone" required>
+            </p>
+            <button type="submit">変更する</button>
         </form>
-        <a href="{% url 'supplier_tbl_home' %}">仕入れ先画面に戻る</a>
-        <a href="{% url 'hospital_tbl' %}">他病院一覧に戻る</a>
+        <a href="{% url 'hospital_tbl_home' %}" class="back-link">他病院TBLホーム画面</a>
+        <a href="{% url 'hospital_tbl' %}" class="back-link">他病院一覧に戻る</a>
     </div>
 </body>
 </html>

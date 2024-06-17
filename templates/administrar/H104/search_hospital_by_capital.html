@@ -104,11 +104,11 @@
             text-align: center;
             margin-top: 20px;
             color: #007bff;
-            text-decoration: none.
+            text-decoration: none
         }
 
         a:hover {
-            color: #0056b3.
+            color: #0056b3
         }
     </style>
 </head>
@@ -122,6 +122,11 @@
         <input type="submit" value="検索">
     </form>
 
+    {% if message %}
+        <div class="messages error">{{ message }}</div>
+    {% endif %}
+
+    {% if hospitals %}
         <table>
             <thead>
                 <tr>
@@ -133,7 +138,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for hospital in results %}
+                {% for hospital in hospitals %}
                     <tr>
                         <td>{{ hospital.tabyouinid }}</td>
                         <td>{{ hospital.tabyouinmei }}</td>
@@ -144,7 +149,8 @@
                 {% endfor %}
             </tbody>
         </table>
+    {% endif %}
 
-    <a href="{% url 'hospital_tbl_home' %}">病院一覧画面に戻る</a>
+    <a href="{% url 'hospital_tbl_home' %}">他病院TBLホーム画面</a>
 </body>
 </html>

@@ -42,6 +42,8 @@ urlpatterns = [
     path('search_hospital_by_capital/', views.search_hospital_by_capital, name='search_hospital_by_capital'),
     # 他病院情報変更機能のURLパターン。ビュー関数edit_hospital_infoを呼び出します。
     path('edit_hospital_info/<str:tabyouinid>/', views.edit_hospital_info, name='edit_hospital_info'),
+    # 他病院TBL：仕入先一覧ページのURLパターン（電話番号変更用）
+    path(' hospital_tbl/', views.hospital_tbl, name='hospital_tbl'),
     # 従業員＆管理者のパスワード変更機能
     path('change_password/', views.change_password, name='change_password'),
     # パスワード変更成功機能

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>資本金検索</title>
+    <title>住所検索</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,7 +33,7 @@
             color: #333;
         }
 
-        input[type="number"] {
+        input[type="text"] {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -113,15 +113,20 @@
     </style>
 </head>
 <body>
-    <h1>資本金検索</h1>
+    <h1>住所検索</h1>
 
     <form method="post">
         {% csrf_token %}
-        <label for="capital_search">資本金を入力してください:</label>
-        <input type="number" id="capital_search" name="capital_search" required>
+        <label for="address_search">住所を入力してください:</label>
+        <input type="text" id="address_search" name="address_search" required>
         <input type="submit" value="検索">
     </form>
-    
+
+    {% if message %}
+        <div class="messages error">{{ message }}</div>
+    {% endif %}
+
+    {% if results %}
         <table>
             <thead>
                 <tr>
@@ -130,7 +135,6 @@
                     <th>住所</th>
                     <th>電話番号</th>
                     <th>資本金</th>
-                    <th>救急対応</th>
                 </tr>
             </thead>
             <tbody>
@@ -140,11 +144,13 @@
                         <td>{{ hospital.tabyouinmei }}</td>
                         <td>{{ hospital.abyouinaddress }}</td>
                         <td>{{ hospital.tabyouintel }}</td>
+                        <td>{{ hospital.byouinshihonk }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+    {% endif %}
 
-    <a href="{% url 'hospital_list.html' %}">病院一覧画面に戻る</a>
+    <a href="{% url 'hospital_tbl_home' %}">他病院TBLホーム画面</a>
 </body>
 </html>
