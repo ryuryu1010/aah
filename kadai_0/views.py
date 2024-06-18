@@ -311,6 +311,9 @@ def change_phone_number(request, shiireid):
     return render(request, '../templates/administrar/S105/change_phone_number.html', {'supplier': supplier})
 
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Employee
 
 # パスワード変更を処理するビュー関数
 def change_password(request):
@@ -334,22 +337,21 @@ def change_password(request):
             employee = Employee.objects.get(empid=empid, emppasswd=current_password)
         except Employee.DoesNotExist:
             # 従業員情報が存在しない場合のエラーメッセージ表示
-            return render(request, '../templates/error/error_page.html',
-                          {'error_message': '従業員IDまたは現在のパスワードが正しくありません。'})
+            return render(request, '../templates/error/error_page.html', {'error_message': '従業員IDまたは現在のパスワードが正しくありません。'})
 
         # 新しいパスワードの一致確認
         if new_password != confirm_new_password:
             # 新しいパスワードが一致しない場合のエラーメッセージ表示
-            return render(request, '../templates/error/error_page.html',
-                          {'error_message': '新しいパスワードが一致しません。'})
+            return render(request, '../templates/error/error_page.html', {'error_message': '新しいパスワードが一致しません。'})
 
         # 新しいパスワードを保存
         employee.emppasswd = new_password
         employee.save()
         messages.success(request, 'パスワードが正常に変更されました。')
-        return redirect('password_change_success')
+        # パスワード変更成功ページにリダイレクトし、employee_idをクエリパラメータとして渡す
+        return redirect('password_change_success', employee_id=employee.empid)
 
-    # 管理者の場合、他の管理者を除外して全従業員情報を取得し、管理者自身の情報も取得
+    # 管理者の場合、他の管理者を除外して全従業員情報を取得
     employees = Employee.objects.exclude(emprole=0) if emprole == 0 else None
     if emprole == 0:
         # 管理者自身の情報をセッションに保存
@@ -358,19 +360,15 @@ def change_password(request):
 
     context = {'employees': employees, 'emprole': emprole}
     # パスワード変更ページを表示
-    return render(request, 'administrar/E103/Employee_password_change.html', context)
-
-
+    return render(request, '../templates/administrar/E103/Employee_password_change.html', context)
 
 # パスワード変更成功ページを表示するビュー関数
-def password_change_success(request):
-    # パスワード変更成功ページを表示
-    return render(request, 'administrar/E103/password_change_success.html')
+def password_change_success(request, employee_id):
+    # employee_idを使って従業員情報を取得し、テンプレートに渡す
+    employee = Employee.objects.get(empid=employee_id)
+    return render(request, '../templates/administrar/E103/password_change_success.html', {'employee': employee})
 
 
-# 更新成功のビュー関数
-def employee_update_success(request):
-    return render(request, '../templates/administrar/E102/employee_update_success.html')
 
 
 # 従業員情報更新のビュー関数
@@ -398,7 +396,8 @@ def employee_update(request):
                 employee.empfname = new_empfname
                 employee.empiname = new_empiname
                 employee.save()  # データベースに保存
-                return redirect('employee_update_success')  # 更新成功後に成功画面にリダイレクト
+                # employee_id を正しく渡してリダイレクト
+                return redirect('employee_update_success', employee_id=employee.empid)
             except Employee.DoesNotExist:
                 # 従業員IDが見つからない場合
                 return render(request, '../templates/error/error_page.html',
@@ -406,6 +405,10 @@ def employee_update(request):
 
     return render(request, '../templates/administrar/E102/employee_update.html', {'employees': employees, 'employee': employee})
 
+# 更新成功のビュー関数
+def employee_update_success(request, employee_id):
+    employee = Employee.objects.get(empid=employee_id)
+    return render(request, '../templates/administrar/E102/employee_update_success.html', {'employee': employee})
 
 
 
