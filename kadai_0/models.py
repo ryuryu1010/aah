@@ -64,3 +64,23 @@ class Treatment(models.Model):
     quantity = models.IntegerField()
     treatment_date = models.DateTimeField(auto_now_add=True)
     confirmed = models.BooleanField(default=False)
+
+
+
+
+# 電子カルテモデル
+class MedicalRecord(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)  # 患者への外部キー
+    doctor = models.ForeignKey(Employee, on_delete=models.CASCADE)  # 医師への外部キー
+    diagnosis = models.TextField()  # 診断内容
+    treatment_plan = models.TextField()  # 治療計画
+    record_date = models.DateTimeField(auto_now_add=True)  # 記録日（自動追加）
+
+# シフトモデル
+class Shift(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)  # 従業員への外部キー
+    start_time = models.DateTimeField()  # シフト開始時間
+    end_time = models.DateTimeField()  # シフト終了時間
+    role = models.CharField(max_length=32)  # 役割
+
+

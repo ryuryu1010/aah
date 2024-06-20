@@ -52,7 +52,6 @@ urlpatterns = [
     path('employee/update/', views.employee_update, name='employee_update'),
     # 成功画面用のURLパターン
     path('employee_update_success/<int:employee_id>/', views.employee_update_success, name='employee_update_success'),
-    # 他のパス...
     # 患者登録機能
     path('patient_registration/', views.patient_registration, name='patient_registration'),
     # 登録成功画面
