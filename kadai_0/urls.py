@@ -80,4 +80,13 @@ urlpatterns = [
     path('treatment_quantity_reduction_success/', views.treatment_quantity_reduction_success, name='treatment_quantity_reduction_success'),
     # エラーページ
     path('error_page/', views.error_page, name='error_page'),
+    # 電子カルテ一覧表示
+    path('medical_records/', views.medical_record_list, name='medical_record_list'),
+    # 電子カルテ追加
+    path('add_medical_record/', views.add_medical_record, name='add_medical_record'),
+    # シフト一覧表示
+    path('shifts/', views.shift_list, name='shift_list'),
+    # シフト追加
+    path('add_shift/', views.add_shift, name='add_shift'),
+
 ]

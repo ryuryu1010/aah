@@ -108,7 +108,7 @@
 <body>
     <div class="container">
         <h1>処置履歴確認</h1>
-        <form method="post" action="{% url 'treatment_history' %}">
+        <form method="get" action="{% url 'treatment_history' %}">
             {% csrf_token %}
             <label for="patid">患者ID:</label>
             <input type="text" id="patid" name="patid">
@@ -118,8 +118,8 @@
         </form>
 
         <div class="sort-buttons">
-            <a href="{% url 'treatment_history' %}?sort=asc">昇順</a>
-            <a href="{% url 'treatment_history' %}?sort=desc">降順</a>
+            <a href="?sort=asc">昇順</a>
+            <a href="?sort=desc">降順</a>
         </div>
 
         {% if patient %}

@@ -1,14 +1,18 @@
 import re  # 正規表現モジュールのインポート
-from audioop import reverse  # reverse関数のインポート
 from datetime import datetime, timezone  # datetimeとtimezoneモジュールのインポート
 
-from django.http import HttpResponseRedirect  # HttpResponseRedirectをインポート
-from django.shortcuts import render, redirect, get_object_or_404  # Djangoのショートカット関数をインポート
-from django.contrib import messages  # Djangoのメッセージフレームワークをインポート
+from django.http import HttpResponse
 from django.utils.dateparse import parse_date  # 日付の解析モジュールをインポート
 from django.db.models import Q  # OR条件を作成するためのモジュールをインポート
-from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine, Tabyouin  # モデルをインポート
+from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine, Tabyouin, MedicalRecord  # モデルをインポート
 from urllib.parse import urlencode  # URLエンコードモジュールをインポート
+import io
+import matplotlib.pyplot as plt
+import urllib, base64
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Employee, Shift
+from django.utils.dateparse import parse_datetime
 
 
 # カスタム例外の定義
@@ -856,21 +860,28 @@ def treatment_success(request):
 
 
 
+
 # 処置の確認を行うビュー関数
 def treatment_history(request):
     patient = None
     patients = None
     treatments = None
 
-    if request.method == 'POST':
-        if 'patid_search' in request.POST:
-            patid = request.POST.get('patid')
+    sort_order = request.GET.get('sort', 'asc')
+    patid = request.GET.get('patid')
+
+    if request.method == 'POST' or patid:
+        if 'patid_search' in request.POST or patid:
+            if not patid:
+                patid = request.POST.get('patid')
             if patid:
                 if Patient.objects.filter(patid=patid).exists():
                     # 患者情報を取得
                     patient = get_object_or_404(Patient, patid=patid)
                     # 患者に関連する処置情報を取得
-                    treatments = Treatment.objects.filter(patient=patient)
+                    treatments = Treatment.objects.filter(patient=patient).order_by(
+                        'treatment_date' if sort_order == 'asc' else '-treatment_date'
+                    )
                 else:
                     # 該当する患者が見つからない場合のエラーメッセージ表示
                     return render(request, '../templates/error/error_page.html',
@@ -879,7 +890,9 @@ def treatment_history(request):
             # 全患者情報を取得
             patients = Patient.objects.all()
             # 全処置情報を取得
-            treatments = Treatment.objects.all()
+            treatments = Treatment.objects.all().order_by(
+                'treatment_date' if sort_order == 'asc' else '-treatment_date'
+            )
 
     context = {
         'patient': patient,
@@ -888,6 +901,158 @@ def treatment_history(request):
     }
     # 処置履歴ページを表示
     return render(request, '../templates/doctor/D104/treatment_history.html', context)
+
+
+
+# 電子カルテの追加
+def add_medical_record(request):
+    if request.method == 'POST':
+        # フォームからデータを取得
+        patient_id = request.POST.get('patient_id')
+        diagnosis = request.POST.get('diagnosis')
+        treatment_plan = request.POST.get('treatment_plan')
+        address = request.POST.get('address')
+        gender = request.POST.get('gender')
+        medicine_ids = request.POST.getlist('medicine_ids')
+        quantities = request.POST.getlist('quantities')
+
+        # 患者と医師のオブジェクトを取得
+        patient = get_object_or_404(Patient, pk=patient_id)
+        doctor_id = request.session.get('userID')
+        doctor = get_object_or_404(Employee, pk=doctor_id)
+
+        # 電子カルテの作成
+        medical_record = MedicalRecord.objects.create(
+            patient=patient,
+            doctor=doctor,
+            diagnosis=diagnosis,
+            treatment_plan=treatment_plan,
+            address=address,
+            gender=gender
+        )
+
+        # 薬物投与指示の作成
+        valid_treatments = False
+        for medicine_id, quantity in zip(medicine_ids, quantities):
+            if int(quantity) > 0:
+                medicine = get_object_or_404(Medicine, pk=medicine_id)
+                Treatment.objects.create(
+                    patient=patient,
+                    doctor=doctor,
+                    medicine=medicine,
+                    quantity=quantity
+                )
+                valid_treatments = True
+
+        if valid_treatments:
+            messages.success(request, 'カルテが正常に追加されました。')
+            return redirect('medical_record_list')  # カルテ一覧ページにリダイレクト
+        else:
+            messages.error(request, '薬物の数量が入力されていません。')
+            return redirect('add_medical_record')  # カルテ追加ページにリダイレクト
+
+    # GETリクエストの場合、患者のリストを取得してフォームを表示
+    patients = Patient.objects.all()
+    medicines = Medicine.objects.all()
+    return render(request, 'kadai2/add_medical_record.html', {'patients': patients, 'medicines': medicines})
+
+# 電子カルテ一覧を表示するビュー
+def medical_record_list(request):
+    records = MedicalRecord.objects.all()
+    query = request.GET.get('query')
+    insurance_expired_date = request.GET.get('insurance_expired_date')
+
+    # 従業員の役割を取得
+    emp_role = request.session.get('emp_role', None)
+
+    if query:
+        # 患者IDまたは患者名（姓または名）で検索
+        records = records.filter(
+            Q(patient__patfname__icontains=query) |
+            Q(patient__patiname__icontains=query)
+        )
+
+    if insurance_expired_date and emp_role == 2:
+        # 保険証期限が指定された日付以前の患者を検索
+        try:
+            insurance_expired_date = parse_date(insurance_expired_date)
+            records = records.filter(patient__hokenexp__lt=insurance_expired_date)
+        except ValueError:
+            pass
+
+    # 性別を日本語に変換
+    for record in records:
+        if record.gender == 'male':
+            record.gender = '男性'
+        elif record.gender == 'female':
+            record.gender = '女性'
+        else:
+            record.gender = 'その他'
+
+    return render(request, 'kadai2/medical_record_list.html', {'records': records, 'emp_role': emp_role})
+
+
+# シフトの追加
+def add_shift(request):
+    if request.method == 'POST':
+        # フォームからデータを取得
+        employee_id = request.POST.get('employee_id')
+        start_time = parse_datetime(request.POST.get('start_time'))
+        end_time = parse_datetime(request.POST.get('end_time'))
+        role = request.POST.get('role')
+
+        # 従業員のオブジェクトを取得
+        employee = get_object_or_404(Employee, pk=employee_id)
+
+        # シフトの作成
+        Shift.objects.create(
+            employee=employee,
+            start_time=start_time,
+            end_time=end_time,
+            role=role
+        )
+
+        messages.success(request, 'シフトが正常に追加されました。')  # 成功メッセージを表示
+        return redirect('shift_list')  # シフト一覧ページにリダイレクト
+
+    # GETリクエストの場合、従業員のリストを取得してフォームを表示
+    employees = Employee.objects.all()
+    return render(request, '../templates/kadai2/add_shift.html', {'employees': employees})
+
+
+
+# シフト管理システムの一覧表示
+def shift_list(request):
+    shifts = Shift.objects.all()  # 全てのシフトを取得
+
+    # シフトデータをプロット
+    employee_names = [shift.employee.empfname + " " + shift.employee.empiname for shift in shifts]
+    start_times = [shift.start_time for shift in shifts]
+    end_times = [shift.end_time for shift in shifts]
+    roles = [shift.role for shift in shifts]
+
+    fig, ax = plt.subplots(figsize=(10, len(employee_names) * 0.5))
+    y_pos = range(len(employee_names))
+
+    ax.barh(y_pos, [(end - start).total_seconds() / 3600 for start, end in zip(start_times, end_times)], align='center')
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(employee_names)
+    ax.invert_yaxis()  # labels read top-to-bottom
+    ax.set_xlabel('Hours')
+    ax.set_title('Shift Hours')
+
+    plt.tight_layout()
+
+    # グラフを画像として保存し、テンプレートに渡す
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    string = base64.b64encode(buf.read())
+    uri = 'data:image/png;base64,' + urllib.parse.quote(string)
+
+    return render(request, '../templates/kadai2/shift_list.html', {'data': uri, 'shifts': shifts})
+
+
 
 
 # エラーページを表示するビュー関数

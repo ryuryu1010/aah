@@ -68,6 +68,7 @@ class Treatment(models.Model):
 
 
 
+
 # 電子カルテモデル
 class MedicalRecord(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)  # 患者への外部キー
@@ -75,6 +76,9 @@ class MedicalRecord(models.Model):
     diagnosis = models.TextField()  # 診断内容
     treatment_plan = models.TextField()  # 治療計画
     record_date = models.DateTimeField(auto_now_add=True)  # 記録日（自動追加）
+    address = models.CharField(max_length=255, blank=True, null=True)  # 住所を追加
+    gender = models.CharField(max_length=10, blank=True, null=True)  # 性別を追加
+
 
 # シフトモデル
 class Shift(models.Model):
