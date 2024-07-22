@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電子カルテ追加</title>
+    <style>
+        /* CSSスタイル */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select, textarea {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .back-button {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .back-button a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-button a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>電子カルテ追加</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label for="patient_id">患者ID</label>
+            <select name="patient_id" required>
+                {% for patient in patients %}
+                <option value="{{ patient.patid }}">{{ patient.patfname }} {{ patient.patiname }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="diagnosis">診断内容</label>
+            <textarea name="diagnosis" rows="4" required></textarea>
+
+            <label for="treatment_plan">治療計画</label>
+            <textarea name="treatment_plan" rows="4" required></textarea>
+
+            <label for="address">住所</label>
+            <input type="text" name="address" required>
+
+            <label for="gender">性別</label>
+            <select name="gender" required>
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+                <option value="other">その他</option>
+            </select>
+
+            <label for="medicine_ids">薬物投与指示</label>
+            <div class="medicines-container">
+                {% for medicine in medicines %}
+                <div class="medicine-item">
+                    <input type="checkbox" name="medicine_ids" value="{{ medicine.medicineid }}">
+                    <label>{{ medicine.medicinename }}</label>
+                    <input type="number" name="quantities" min="0" placeholder="数量">
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit">追加</button>
+        </form>
+        <div class="back-button">
+            <a href="{% url 'medical_record_list' %}">カルテ一覧に戻る</a>
+        </div>
+    </div>
+</body>
+</html>

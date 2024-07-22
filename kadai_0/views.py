@@ -1,26 +1,24 @@
-import re  # 正規表現モジュールのインポート
-from datetime import datetime, timezone  # datetimeとtimezoneモジュールのインポート
-
-from django.http import HttpResponse
-from django.utils.dateparse import parse_date  # 日付の解析モジュールをインポート
-from django.db.models import Q  # OR条件を作成するためのモジュールをインポート
-from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine, Tabyouin, MedicalRecord  # モデルをインポート
-from urllib.parse import urlencode  # URLエンコードモジュールをインポート
+import base64
 import io
+import re
+import urllib
+from datetime import datetime
+from urllib.parse import urlencode
 import matplotlib.pyplot as plt
-import urllib, base64
-from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import Employee, Shift
-from django.utils.dateparse import parse_datetime
+from django.core.files.storage import FileSystemStorage
+from django.db.models import Q
+from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.dateparse import parse_date, parse_datetime
 
+from .image_processing import extract_text_from_image
+from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine, Tabyouin, MedicalRecord, Shift
 
 # カスタム例外の定義
 class BOException(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
-
 
 # ログイン処理を行うビュー関数
 def login(request):
@@ -48,30 +46,28 @@ def login(request):
                 return render(request, '../templates/index/d_index.html')
             elif emp_info.emprole == 2:
                 return render(request, '../templates/index/r_index.html')
+            elif emp_info.emprole == 3:
+                return render(request, '../templates/csv/index.html')
 
         except Employee.DoesNotExist:
             # 従業員情報が存在しない場合のエラーメッセージ表示
             return render(request, '../templates/error/login_error.html',
                           {'error_message': 'ユーザーIDまたはパスワードが間違っています'})
 
-
 # 管理者ホーム画面を表示するビュー関数
 def a_index(request):
     # 管理者ホーム画面を表示
     return render(request, '../templates/index/a_index.html')
-
 
 # 受付ホーム画面を表示するビュー関数
 def r_index(request):
     # 受付ホーム画面を表示
     return render(request, '../templates/index/r_index.html')
 
-
 # 医師ホーム画面を表示するビュー関数
 def d_index(request):
     # 医師ホーム画面を表示
     return render(request, '../templates/index/d_index.html')
-
 
 # 仕入先TBLホーム画面を表示するビュー関数
 def supplier_tbl_home(request):
@@ -82,6 +78,7 @@ def hospital_tbl_home(request):
     return render(request, '../templates/index/hospital_tbl_home.html')
 
 
+
 # ログアウト処理を行うビュー関数
 def logout(request):
     from django.contrib.auth import logout as auth_logout
@@ -89,7 +86,6 @@ def logout(request):
     auth_logout(request)
     # ログアウトページを表示
     return render(request, '../templates/logout/logout.html')
-
 
 # 従業員登録を処理するビュー関数
 def employee_registration(request):
@@ -131,7 +127,6 @@ def employee_registration(request):
     # 従業員登録ページを表示
     return render(request, '../templates/administrar/E101/Current _employee_registration_function.html')
 
-
 # 従業員リストを表示するビュー関数
 def employee_list(request):
     try:
@@ -144,7 +139,6 @@ def employee_list(request):
 
     # 従業員リストページを表示
     return render(request, '../templates/administrar/E101/employee_list.html', {'employees': employees})
-
 
 # 仕入先追加を処理するビュー関数
 def Add_vendor(request):
@@ -201,7 +195,6 @@ def Add_vendor(request):
     # 仕入先追加ページを表示
     return render(request, '../templates/administrar/S101/Ability_to_add_records.html')
 
-
 # 仕入先テーブルを表示するビュー関数
 def supplier_TBL(request):
     try:
@@ -214,7 +207,6 @@ def supplier_TBL(request):
 
     # 仕入先テーブルページを表示
     return render(request, '../templates/administrar/S102/Supplier _TBL.html', {'suppliers': suppliers})
-
 
 # 住所検索を処理するビュー関数
 def address_search(request):
@@ -240,14 +232,13 @@ def address_search(request):
             # 住所が入力されていない場合のエラーメッセージ表示
             return render(request, '../templates/error/error_page.html', {'error_message': '住所を入力してください。'})
 
-
 # 資本金で仕入れ先を検索するビュー
 def search_by_capital(request):
     query = request.GET.get('capital')
     suppliers = None
     if query:
         # 入力バリデーション: 全角・半角の数字、円記号、カンマ以外はエラー
-        if not re.match(r'^[0-9０-９＄\$￥\\,]*$', query):
+        if not re.match(r"^[0-9０-９＄\$￥\\,]*$", query):
             return render(request, '../templates/error/error_page.html', {'error_message': '無効な文字が含まれています。'})
 
         # 半角数字に変換
@@ -270,7 +261,6 @@ def search_by_capital(request):
 
     return render(request, '../templates/administrar/S104/search_by_capital.html', {'suppliers': suppliers, 'query': query, 'message': message})
 
-
 # 仕入先一覧表示ビュー
 def supplier_list(request):
     query = request.GET.get('q')
@@ -279,8 +269,6 @@ def supplier_list(request):
     else:
         suppliers = Shiiregyosha.objects.all()
     return render(request, '../templates/administrar/S105/supplier_list.html', {'suppliers': suppliers})
-
-
 
 # 電話番号変更ビュー
 def change_phone_number(request, shiireid):
@@ -315,9 +303,6 @@ def change_phone_number(request, shiireid):
     return render(request, '../templates/administrar/S105/change_phone_number.html', {'supplier': supplier})
 
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Employee
 
 # パスワード変更を処理するビュー関数
 def change_password(request):
@@ -372,9 +357,6 @@ def password_change_success(request, employee_id):
     employee = Employee.objects.get(empid=employee_id)
     return render(request, '../templates/administrar/E103/password_change_success.html', {'employee': employee})
 
-
-
-
 # 従業員情報更新のビュー関数
 def employee_update(request):
     employees = Employee.objects.all()  # すべての従業員を取得
@@ -413,8 +395,6 @@ def employee_update(request):
 def employee_update_success(request, employee_id):
     employee = Employee.objects.get(empid=employee_id)
     return render(request, '../templates/administrar/E102/employee_update_success.html', {'employee': employee})
-
-
 
 # 他病院登録機能
 def register_hospital(request):
@@ -455,7 +435,7 @@ def register_hospital(request):
         new_hospital = Tabyouin(
             tabyouinid=tabyouinid,
             tabyouinmei=tabyouinmei,
-            abyouinaddress=tabyouinaddress,
+            tabyouinaddress=tabyouinaddress,
             tabyouintel=tabyouintel,
             byouinshihonk=byouinshihonkin,
             kyukyu=kyukyu
@@ -490,7 +470,7 @@ def search_hospital_by_address(request):
         address_search = request.POST.get('address_search', '')
         if address_search:
             # 住所キーワードで他病院を検索
-            results = Tabyouin.objects.filter(abyouinaddress__icontains=address_search)
+            results = Tabyouin.objects.filter(tabyouinaddress__icontains=address_search)
             if results.exists():
                 # 検索結果を表示
                 return render(request, 'administrar/H103/search_hospital_by_address.html', {'results': results})
@@ -500,7 +480,6 @@ def search_hospital_by_address(request):
         else:
             # 住所が入力されていない場合のエラーメッセージ表示
             return render(request, '../templates/error/error_page.html', {'error_message': '住所を入力してください。'})
-
 
 # 資本金で他病院を検索するビュー
 def search_hospital_by_capital(request):
@@ -534,11 +513,6 @@ def search_hospital_by_capital(request):
 
     # GETリクエストの場合、検索ページを表示
     return render(request, 'administrar/H104/search_hospital_by_capital.html')
-
-
-
-
-
 
 # 他病院一覧表示ビュー
 def hospital_list(request):
@@ -581,8 +555,6 @@ def edit_hospital_info(request, tabyouinid):
     # GETリクエストの場合、変更ページを表示
     return render(request, 'administrar/H105/edit_hospital_info.html', {'hospital': hospital})
 
-
-
 # 他病院一覧表示ビュー
 def hospital_tbl(request):
     query = request.GET.get('q')
@@ -591,9 +563,6 @@ def hospital_tbl(request):
     else:
         hospitals = Tabyouin.objects.all()
     return render(request, '../templates/administrar/H105/hospital_tbl.html', {'hospitals': hospitals})
-
-
-
 
 # 患者登録を処理するビュー関数
 def patient_registration(request):
@@ -631,18 +600,15 @@ def patient_registration(request):
     # 患者登録ページを表示
     return render(request, '../templates/reception/P101/Patient_registration.html')
 
-
 # 患者登録成功ページを表示するビュー関数
 def patient_registration_success(request):
     # 患者登録成功ページを表示
-    return render(request, '../templates/reception/P101/patient_registration_success.html')
-
+    return render(request, '../templates/reception/P101/patient_registration_succes.html')
 
 # 保険変更成功ページを表示するビュー関数
 def patient_insurance_change_success(request):
     # 保険変更成功ページを表示
     return render(request, '../templates/reception/P102/patient_insurance_change_success.html')
-
 
 # 患者リストを表示するビュー関数
 def patient_list(request):
@@ -655,8 +621,7 @@ def patient_list(request):
                       {'error_message': '患者リストを取得できませんでした。'})
 
     # 患者リストページを表示
-    return render(request, '../templates/reception/P102/patient_list.html', {'patients': patients})
-
+    return render(request, '../templates/kadai2(消去予定)/medical_record_list.html', {'patients': patients})
 
 # 患者の保険情報を編集するビュー関数
 def edit_patient_insurance(request, patid):
@@ -692,12 +657,10 @@ def edit_patient_insurance(request, patid):
     # 保険情報編集ページを表示
     return render(request, 'reception/P102/edit_patient_insurance.html', {'patient': patient})
 
-
 # 保険変更成功ページを表示するビュー関数
 def insurance_change_success(request):
     # 保険変更成功ページを表示
     return render(request, 'reception/P102/patient_insurance_change_success.html')
-
 
 # 患者検索を処理するビュー関数
 def search_patients(request):
@@ -769,9 +732,7 @@ def search_patients(request):
         'error_message': error_message,
     }
     # 検索結果をテンプレートにレンダリングして表示
-    return render(request, 'reception/P104/Patient_search.html', context)
-
-
+    return render(request, 'kadai2(消去予定)/medical_record_list.html', context)
 
 # 処置を追加するビュー関数
 def add_treatments(request):
@@ -810,7 +771,6 @@ def add_treatments(request):
     }
     # 処置追加ページを表示
     return render(request, '../templates/doctor/D101/add_treatment.html', context)
-
 
 # 処置確定を行うビュー関数
 def confirm_treatments(request):
@@ -852,14 +812,10 @@ def confirm_treatments(request):
     # 処置確認ページを表示
     return render(request, '../templates/doctor/D103/confirm_treatment.html', context)
 
-
 # 処置追加成功ページを表示するビュー関数
 def treatment_success(request):
     # 処置追加成功ページを表示
     return render(request, '../templates/doctor/D103/treatment_success.html')
-
-
-
 
 # 処置の確認を行うビュー関数
 def treatment_history(request):
@@ -901,8 +857,6 @@ def treatment_history(request):
     }
     # 処置履歴ページを表示
     return render(request, '../templates/doctor/D104/treatment_history.html', context)
-
-
 
 # 電子カルテの追加
 def add_medical_record(request):
@@ -954,8 +908,7 @@ def add_medical_record(request):
     # GETリクエストの場合、患者のリストを取得してフォームを表示
     patients = Patient.objects.all()
     medicines = Medicine.objects.all()
-    return render(request, 'kadai2/add_medical_record.html', {'patients': patients, 'medicines': medicines})
-
+    return render(request, 'kadai2(消去予定)/add_medical_record.html', {'patients': patients, 'medicines': medicines})
 # 電子カルテ一覧を表示するビュー
 def medical_record_list(request):
     records = MedicalRecord.objects.all()
@@ -969,7 +922,7 @@ def medical_record_list(request):
         # 患者IDまたは患者名（姓または名）で検索
         records = records.filter(
             Q(patient__patfname__icontains=query) |
-            Q(patient__patiname__icontains=query)
+            Q(patient__patiname__icontains=query)  # ここを修正
         )
 
     if insurance_expired_date and emp_role == 2:
@@ -989,9 +942,7 @@ def medical_record_list(request):
         else:
             record.gender = 'その他'
 
-    return render(request, 'kadai2/medical_record_list.html', {'records': records, 'emp_role': emp_role})
-
-
+    return render(request, 'kadai2(消去予定)/medical_record_list.html', {'records': records, 'emp_role': emp_role})
 # シフトの追加
 def add_shift(request):
     if request.method == 'POST':
@@ -1017,9 +968,7 @@ def add_shift(request):
 
     # GETリクエストの場合、従業員のリストを取得してフォームを表示
     employees = Employee.objects.all()
-    return render(request, '../templates/kadai2/add_shift.html', {'employees': employees})
-
-
+    return render(request, '../templates/kadai2(消去予定)/add_shift.html', {'employees': employees})
 
 # シフト管理システムの一覧表示
 def shift_list(request):
@@ -1050,10 +999,7 @@ def shift_list(request):
     string = base64.b64encode(buf.read())
     uri = 'data:image/png;base64,' + urllib.parse.quote(string)
 
-    return render(request, '../templates/kadai2/shift_list.html', {'data': uri, 'shifts': shifts})
-
-
-
+    return render(request, '../templates/kadai2(消去予定)/shift_list.html', {'data': uri, 'shifts': shifts})
 
 # エラーページを表示するビュー関数
 def error_page(request):
@@ -1063,25 +1009,6 @@ def error_page(request):
     emprole = request.session.get('emp_role', None)
     # エラーページを表示
     return render(request, '../templates/error/error_page.html', {'error_message': error_message, 'emprole': emprole})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # 処置数量を複数一度に減らすためのビュー関数
 def reduce_multiple_treatment_quantities(request):
@@ -1134,7 +1061,6 @@ def reduce_multiple_treatment_quantities(request):
     # 処置数量減少画面を表示
     return render(request, '../templates/doctor/D102/reduce_multiple_treatment_quantities.html', context)
 
-
 # 処置数量減少を確定するためのビュー関数
 def confirm_reduction(request):
     if request.method == 'POST':
@@ -1171,9 +1097,51 @@ def confirm_reduction(request):
     # GETリクエストの場合、処置数量減少画面にリダイレクト
     return redirect('reduce_multiple_treatment_quantities')
 
-
 # 処置数量減少成功ページを表示するビュー関数
 def treatment_quantity_reduction_success(request):
     # 処置数量減少成功ページを表示
     return render(request, '../templates/doctor/D103/treatment_quantity_reduction_success.html')
 
+
+
+
+
+from django.shortcuts import render, redirect
+from django.core.files.storage import FileSystemStorage
+from .image_processing import extract_text_from_image
+from .models import Treatment
+
+def index(request):
+    if 'userID' not in request.session:
+        return redirect('login')
+    return render(request, 'csv/index.html')
+
+def upload_image(request):
+    if 'userID' not in request.session:
+        return redirect('login')
+    emp_role = request.session.get('emp_role')
+    records = Treatment.objects.all()  # or another model related to the user's role
+
+    if request.method == 'POST' and request.FILES['image']:
+        image = request.FILES['image']
+        if image.content_type not in ['image/jpeg', 'image/png']:
+            return render(request, 'csv/index.html', {'error': 'Unsupported file format. Please upload a JPEG or PNG image.', 'records': records, 'emp_role': emp_role})
+
+        fs = FileSystemStorage()
+        filename = fs.save(image.name, image)
+        uploaded_file_path = fs.path(filename)
+
+        try:
+            text = extract_text_from_image(uploaded_file_path)
+            return render(request, 'csv/result.html', {'text': text, 'records': records, 'emp_role': emp_role})
+        except RuntimeError as e:
+            return render(request, 'csv/index.html', {'error': str(e), 'records': records, 'emp_role': emp_role})
+        except Exception as e:
+            return render(request, 'csv/index.html', {'error': 'An error occurred during processing.', 'records': records, 'emp_role': emp_role})
+
+    return redirect('index')
+
+def result(request):
+    if 'userID' not in request.session:
+        return redirect('login')
+    return render(request, 'csv/result.html')

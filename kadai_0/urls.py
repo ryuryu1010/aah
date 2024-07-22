@@ -72,14 +72,25 @@ urlpatterns = [
     path('treatment_success/', views.treatment_success, name='treatment_success'),
     # 処置履歴
     path('treatment_history/', views.treatment_history, name='treatment_history'),
+    # エラーページ
+    path('error_page/', views.error_page, name='error_page'),
+    #
+    path('upload/', views.upload_image, name='upload_image'),
+    #
+    path('result/', views.result, name='result'),
+    #
+    path('', views.index, name='index'),
+
+
+
+
+
     # 処置数量減少
     path('reduce_multiple_treatment_quantities/', views.reduce_multiple_treatment_quantities, name='reduce_multiple_treatment_quantities'),
     # 処置数量減少確認
     path('confirm_reduction/', views.confirm_reduction, name='confirm_reduction'),
     # 処置数量減少成功画面
     path('treatment_quantity_reduction_success/', views.treatment_quantity_reduction_success, name='treatment_quantity_reduction_success'),
-    # エラーページ
-    path('error_page/', views.error_page, name='error_page'),
     # 電子カルテ一覧表示
     path('medical_records/', views.medical_record_list, name='medical_record_list'),
     # 電子カルテ追加

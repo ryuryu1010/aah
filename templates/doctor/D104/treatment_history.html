@@ -117,11 +117,7 @@
             <a href="{% url 'd_index' %}">医師画面に戻る</a>
         </form>
 
-        <div class="sort-buttons">
-            <a href="{% url 'treatment_history' %}?sort=asc">昇順</a>
-            <a href="{% url 'treatment_history' %}?sort=desc">降順</a>
-        </div>
-
+    
         {% if patient %}
             <h2>処置履歴: {{ patient.patid }} {{ patient.patfname }} {{ patient.patiname }}</h2>
             {% if treatments %}

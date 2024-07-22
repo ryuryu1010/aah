@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電子カルテ一覧</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e9f4fb;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #999;
+            font-size: 18px;
+        }
+
+        a, input[type="submit"] {
+            display: inline-block;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover, input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="date"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .sort-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .sort-buttons a {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>電子カルテ一覧</h1>
+        <form method="get" action="{% url 'medical_record_list' %}">
+            <label for="query">患者名またはIDで検索:</label>
+            <input type="text" id="query" name="query" value="{{ request.GET.query }}">
+            <label for="insurance_expired_date">保険証期限日付:</label>
+            <input type="date" id="insurance_expired_date" name="insurance_expired_date" value="{{ request.GET.insurance_expired_date }}">
+            <input type="submit" value="検索">
+        </form>
+
+        {% if records %}
+            <table>
+                <tr>
+                    <th>患者ID</th>
+                    <th>姓</th>
+                    <th>名</th>
+                    <th>医師ID</th>
+                    <th>医師名</th>
+                    <th>診断内容</th>
+                    <th>治療計画</th>
+                    <th>記録日</th>
+                    <th>住所</th>
+                    <th>性別</th>
+                </tr>
+                {% for record in records %}
+                    <tr>
+                        <td>{{ record.patient.patid }}</td>
+                        <td>{{ record.patient.patfname }}</td>
+                        <td>{{ record.patient.patiname }}</td>
+                        <td>{{ record.doctor.empid }}</td>
+                        <td>{{ record.doctor.empfname }} {{ record.doctor.empiname }}</td>
+                        <td>{{ record.diagnosis }}</td>
+                        <td>{{ record.treatment_plan }}</td>
+                        <td>{{ record.record_date|date:"Y年m月d日" }}</td>
+                        <td>{{ record.address }}</td>
+                        <td>{{ record.gender }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p class="no-data">該当する電子カルテが見つかりません。</p>
+        {% endif %}
+        <a href="{% url 'd_index' %}">医師画面に戻る</a>
+    </div>
+</body>
+</html>
