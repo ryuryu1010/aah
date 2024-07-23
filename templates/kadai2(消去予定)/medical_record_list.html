@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>電子カルテ一覧</title>
+    <title>カルテ一覧</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -107,12 +107,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>電子カルテ一覧</h1>
+        <h1>カルテ一覧</h1>
         <form method="get" action="{% url 'medical_record_list' %}">
             <label for="query">患者名またはIDで検索:</label>
             <input type="text" id="query" name="query" value="{{ request.GET.query }}">
-            <label for="insurance_expired_date">保険証期限日付:</label>
-            <input type="date" id="insurance_expired_date" name="insurance_expired_date" value="{{ request.GET.insurance_expired_date }}">
+            {% if emp_role == 2 %}
+                <label for="insurance_expired_date">保険証期限日付:</label>
+                <input type="date" id="insurance_expired_date" name="insurance_expired_date" value="{{ request.GET.insurance_expired_date }}">
+            {% endif %}
             <input type="submit" value="検索">
         </form>
 
@@ -146,9 +148,15 @@
                 {% endfor %}
             </table>
         {% else %}
-            <p class="no-data">該当する電子カルテが見つかりません。</p>
+            <p class="no-data">該当するカルテが見つかりません。</p>
         {% endif %}
-        <a href="{% url 'd_index' %}">医師画面に戻る</a>
+        {% if emp_role == 2 %}
+            <a href="{% url 'r_index' %}">受付画面に戻る</a>
+        {% elif emp_role == 1 %}
+            <a href="{% url 'd_index' %}">医師画面に戻る</a>
+        {% elif emp_role == 0 %}
+            <a href="{% url 'a_index' %}">管理者画面に戻る</a>
+        {% endif %}
     </div>
 </body>
 </html>

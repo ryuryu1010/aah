@@ -10,7 +10,9 @@ from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.dateparse import parse_date, parse_datetime
-
+from django.db.models import Q
+from django.utils.dateparse import parse_date
+from .models import MedicalRecord
 from .image_processing import extract_text_from_image
 from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine, Tabyouin, MedicalRecord, Shift
 
@@ -909,6 +911,7 @@ def add_medical_record(request):
     patients = Patient.objects.all()
     medicines = Medicine.objects.all()
     return render(request, 'kadai2(消去予定)/add_medical_record.html', {'patients': patients, 'medicines': medicines})
+
 # 電子カルテ一覧を表示するビュー
 def medical_record_list(request):
     records = MedicalRecord.objects.all()
@@ -919,14 +922,13 @@ def medical_record_list(request):
     emp_role = request.session.get('emp_role', None)
 
     if query:
-        # 患者IDまたは患者名（姓または名）で検索
         records = records.filter(
-            Q(patient__patfname__icontains=query) |
-            Q(patient__patiname__icontains=query)  # ここを修正
+            Q(patient__patfname__icontains=query) |  # __ を使って関連モデルのフィールドを指定
+            Q(patient__patiname__icontains=query) |  # ここも修正
+            Q(patient__patid__icontains=query)      # 患者IDでの検索も追加
         )
 
     if insurance_expired_date and emp_role == 2:
-        # 保険証期限が指定された日付以前の患者を検索
         try:
             insurance_expired_date = parse_date(insurance_expired_date)
             records = records.filter(patient__hokenexp__lt=insurance_expired_date)
@@ -943,6 +945,7 @@ def medical_record_list(request):
             record.gender = 'その他'
 
     return render(request, 'kadai2(消去予定)/medical_record_list.html', {'records': records, 'emp_role': emp_role})
+
 # シフトの追加
 def add_shift(request):
     if request.method == 'POST':
