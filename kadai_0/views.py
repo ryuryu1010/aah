@@ -4,17 +4,16 @@ import re
 import urllib
 from datetime import datetime
 from urllib.parse import urlencode
+
 import matplotlib.pyplot as plt
 from django.contrib import messages
-from django.core.files.storage import FileSystemStorage
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils.dateparse import parse_date, parse_datetime
-from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
-from .models import MedicalRecord
-from .image_processing import extract_text_from_image
-from .models import Employee, Shiiregyosha, Patient, Treatment, Medicine, Tabyouin, MedicalRecord, Shift
+from django.utils.dateparse import parse_datetime
+
+from .models import Employee, Shiiregyosha, Patient, Medicine, Tabyouin, MedicalRecord, Shift
+
 
 # カスタム例外の定義
 class BOException(Exception):
@@ -48,8 +47,7 @@ def login(request):
                 return render(request, '../templates/index/d_index.html')
             elif emp_info.emprole == 2:
                 return render(request, '../templates/index/r_index.html')
-            elif emp_info.emprole == 3:
-                return render(request, '../templates/csv/index.html')
+
 
         except Employee.DoesNotExist:
             # 従業員情報が存在しない場合のエラーメッセージ表示
@@ -79,7 +77,8 @@ def supplier_tbl_home(request):
 def hospital_tbl_home(request):
     return render(request, '../templates/index/hospital_tbl_home.html')
 
-
+def index(request):
+    return render(request,'../templates/csv/index.html')
 
 # ログアウト処理を行うビュー関数
 def logout(request):
@@ -1116,19 +1115,23 @@ from .models import Treatment
 
 def index(request):
     if 'userID' not in request.session:
+        print('No userID in session, redirecting to login')
         return redirect('login')
+    print(f"userID in session: {request.session['userID']}")
     return render(request, 'csv/index.html')
 
 def upload_image(request):
     if 'userID' not in request.session:
+        print('No userID in session, redirecting to login')
         return redirect('login')
     emp_role = request.session.get('emp_role')
-    records = Treatment.objects.all()  # or another model related to the user's role
+    print(f"userID: {request.session['userID']}, emp_role: {emp_role}")
+    records = Treatment.objects.all()  # またはユーザーの役割に関連する他のモデル
 
-    if request.method == 'POST' and request.FILES['image']:
+    if request.method == 'POST' and request.FILES.get('image'):
         image = request.FILES['image']
         if image.content_type not in ['image/jpeg', 'image/png']:
-            return render(request, 'csv/index.html', {'error': 'Unsupported file format. Please upload a JPEG or PNG image.', 'records': records, 'emp_role': emp_role})
+            return render(request, 'csv/index.html', {'error': '対応していないファイル形式です。JPEGまたはPNG画像をアップロードしてください。', 'records': records, 'emp_role': emp_role})
 
         fs = FileSystemStorage()
         filename = fs.save(image.name, image)
@@ -1140,7 +1143,7 @@ def upload_image(request):
         except RuntimeError as e:
             return render(request, 'csv/index.html', {'error': str(e), 'records': records, 'emp_role': emp_role})
         except Exception as e:
-            return render(request, 'csv/index.html', {'error': 'An error occurred during processing.', 'records': records, 'emp_role': emp_role})
+            return render(request, 'csv/index.html', {'error': '処理中にエラーが発生しました。', 'records': records, 'emp_role': emp_role})
 
     return redirect('index')
 

@@ -14,6 +14,8 @@ urlpatterns = [
     path('supplier_tbl_home/', views.supplier_tbl_home, name='supplier_tbl_home'),
     # 他病院TBLホーム画面のURLパターン
     path('hospital_tbl_home/', views.hospital_tbl_home, name='hospital_tbl_home'),
+
+    path('index/', views.index, name='index'),
     # ログアウト機能
     path('logout/', views.logout, name='logout'),
     # 従業員登録機能
@@ -79,7 +81,7 @@ urlpatterns = [
     #
     path('result/', views.result, name='result'),
     #
-    path('', views.index, name='index'),
+    path('index/', views.index, name='index'),
 
 
 
